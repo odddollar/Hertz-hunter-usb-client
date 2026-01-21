@@ -1,6 +1,7 @@
 package usbSerial
 
 import (
+	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
 	"errors"
 
@@ -11,7 +12,7 @@ import (
 func getAvailablePorts() []string {
 	ports, err := serial.GetPortsList()
 	if err != nil {
-		global.ShowError(err)
+		dialogs.ShowError(err)
 	}
 
 	return ports
@@ -24,7 +25,7 @@ func RefreshPortsDisplay() {
 
 	// Show error if no ports found
 	if len(availablePorts) == 0 {
-		global.ShowError(errors.New("no serial ports found"))
+		dialogs.ShowError(errors.New("no serial ports found"))
 	}
 
 	global.Ui.Ports.Refresh()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/usbSerial"
 	"fmt"
@@ -32,6 +33,15 @@ func main() {
 	// Create window
 	global.A = app.New()
 	global.W = global.A.NewWindow("Hertz Hunter USB Client")
+
+	// Create title widget
+	global.Ui.Title = canvas.NewText("Hertz Hunter USB Client", color.Black)
+	global.Ui.Title.Alignment = fyne.TextAlignCenter
+	global.Ui.Title.TextStyle.Bold = true
+	global.Ui.Title.TextSize = 20
+
+	// Create about button
+	global.Ui.About = widget.NewButtonWithIcon("", theme.InfoIcon(), dialogs.ShowAbout)
 
 	// Create ports label
 	global.Ui.PortsLabel = widget.NewLabel("Serial Port:")
@@ -92,7 +102,16 @@ func main() {
 
 	// Create window layout and set content
 	global.W.SetContent(container.NewBorder(
-		configAccordion,
+		container.NewVBox(
+			container.NewBorder(
+				nil,
+				nil,
+				nil,
+				global.Ui.About,
+				global.Ui.Title,
+			),
+			configAccordion,
+		),
 		nil,
 		nil,
 		nil,

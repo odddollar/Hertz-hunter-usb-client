@@ -23,6 +23,8 @@ var (
 
 // Ui components
 var Ui struct {
+	Title                     *canvas.Text
+	About                     *widget.Button
 	PortsLabel                *widget.Label
 	Ports                     *widget.Select
 	PortsRefresh              *widget.Button
