@@ -19,7 +19,8 @@ var (
 
 // Ui components
 var Ui struct {
-	Ports   *widget.Select
-	Connect *widget.Button
-	Graph   *canvas.Image
+	Ports       *widget.Select
+	PortsRefesh *widget.Button
+	Connect     *widget.Button
+	Graph       *canvas.Image
 }

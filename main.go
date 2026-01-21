@@ -2,6 +2,7 @@ package main
 
 import (
 	"Hertz-Hunter-USB-Client/global"
+	"Hertz-Hunter-USB-Client/usbSerial"
 	"image"
 	"image/color"
 
@@ -9,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -30,14 +32,20 @@ func main() {
 	global.A = app.New()
 	global.W = global.A.NewWindow("Hertz Hunter USB Client")
 
-	// Create port selection dropdown
-	global.Ui.Ports = widget.NewSelect([]string{"COM1", "COM2", "COM3"}, func(selected string) {
-		// Handle port selection
+	// Create port selection dropdown with actual serial ports
+	availablePorts := usbSerial.GetAvailablePorts()
+	global.Ui.Ports = widget.NewSelect(availablePorts, func(selected string) {
+
 	})
 
 	// Create connect button
 	global.Ui.Connect = widget.NewButton("Connect", func() {
 
+	})
+
+	// Create refresh ports button
+	global.Ui.PortsRefesh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
+		usbSerial.RefreshPorts()
 	})
 
 	// Create graph display area
@@ -49,7 +57,10 @@ func main() {
 			nil,
 			nil,
 			nil,
-			global.Ui.Connect,
+			container.NewHBox(
+				global.Ui.PortsRefesh,
+				global.Ui.Connect,
+			),
 			global.Ui.Ports,
 		),
 		nil,
