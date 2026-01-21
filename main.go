@@ -61,8 +61,8 @@ func main() {
 	// Create graph display area
 	global.Ui.Graph = canvas.NewImageFromImage(global.CurrentGraph)
 
-	// Create window layout and set content
-	global.W.SetContent(container.NewBorder(
+	// Create accordion for configuration items
+	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration",
 		container.NewVBox(
 			container.NewBorder(
 				nil,
@@ -87,6 +87,12 @@ func main() {
 			),
 			global.Ui.Connect,
 		),
+	))
+	configAccordion.Open(0)
+
+	// Create window layout and set content
+	global.W.SetContent(container.NewBorder(
+		configAccordion,
 		nil,
 		nil,
 		nil,
