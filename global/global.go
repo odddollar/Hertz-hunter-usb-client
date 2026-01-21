@@ -8,6 +8,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+const (
+	DefaultBaudrate = 115200
+)
+
 // Track current graph image
 var CurrentGraph image.Image
 
@@ -19,8 +23,13 @@ var (
 
 // Ui components
 var Ui struct {
-	Ports       *widget.Select
-	PortsRefesh *widget.Button
-	Connect     *widget.Button
-	Graph       *canvas.Image
+	PortsLabel                *widget.Label
+	Ports                     *widget.Select
+	PortsRefresh              *widget.Button
+	BaudrateLabel             *widget.Label
+	Baudrate                  *widget.Entry
+	GraphRefreshIntervalLabel *widget.Label
+	GraphRefreshInterval      *widget.Select
+	Connect                   *widget.Button
+	Graph                     *canvas.Image
 }

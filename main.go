@@ -3,6 +3,7 @@ package main
 import (
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/usbSerial"
+	"fmt"
 	"image"
 	"image/color"
 
@@ -32,31 +33,59 @@ func main() {
 	global.A = app.New()
 	global.W = global.A.NewWindow("Hertz Hunter USB Client")
 
+	// Create ports label
+	global.Ui.PortsLabel = widget.NewLabel("Serial Port:")
+
 	// Create port selection dropdown with serial ports
 	global.Ui.Ports = widget.NewSelect([]string{}, func(selected string) {})
 
-	// Create connect button
-	global.Ui.Connect = widget.NewButton("Connect", func() {})
-
 	// Create refresh ports button
-	global.Ui.PortsRefesh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
+	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
 		usbSerial.RefreshPortsDisplay()
 	})
+
+	// Create baudrate label and entry
+	global.Ui.BaudrateLabel = widget.NewLabel("Baudrate:")
+	global.Ui.Baudrate = widget.NewEntry()
+	global.Ui.Baudrate.SetText(fmt.Sprint(global.DefaultBaudrate))
+
+	// Create refresh graph label and dropdown
+	global.Ui.GraphRefreshIntervalLabel = widget.NewLabel("Graph Refresh Interval:")
+	global.Ui.GraphRefreshInterval = widget.NewSelect([]string{"0.25s", "0.5s", "1s", "2s"}, func(selected string) {})
+	global.Ui.GraphRefreshInterval.SetSelected("0.5s")
+
+	// Create connect button
+	global.Ui.Connect = widget.NewButton("Connect", func() {})
+	global.Ui.Connect.Importance = widget.HighImportance
 
 	// Create graph display area
 	global.Ui.Graph = canvas.NewImageFromImage(global.CurrentGraph)
 
 	// Create window layout and set content
 	global.W.SetContent(container.NewBorder(
-		container.NewBorder(
-			nil,
-			nil,
-			nil,
-			container.NewHBox(
-				global.Ui.PortsRefesh,
-				global.Ui.Connect,
+		container.NewVBox(
+			container.NewBorder(
+				nil,
+				nil,
+				container.NewVBox(
+					global.Ui.PortsLabel,
+					global.Ui.BaudrateLabel,
+					global.Ui.GraphRefreshIntervalLabel,
+				),
+				nil,
+				container.NewVBox(
+					container.NewBorder(
+						nil,
+						nil,
+						nil,
+						global.Ui.PortsRefresh,
+						global.Ui.Ports,
+					),
+					global.Ui.Baudrate,
+					global.Ui.GraphRefreshInterval,
+				),
 			),
-			global.Ui.Ports,
+			global.Ui.Connect,
 		),
 		nil,
 		nil,
