@@ -4,6 +4,7 @@ import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/usbSerial"
+	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
 	"image"
@@ -48,22 +49,20 @@ func main() {
 	global.Ui.PortsLabel = widget.NewLabel("Serial Port:")
 
 	// Create port selection dropdown with serial ports
-	global.Ui.Ports = widget.NewSelect([]string{}, func(selected string) {})
+	global.Ui.Ports = widget.NewSelect([]string{}, func(s string) {})
 
 	// Create refresh ports button
-	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
-		usbSerial.RefreshPortsDisplay()
-	})
+	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), usbSerial.RefreshPortsDisplay)
 
 	// Create baudrate label and entry
 	global.Ui.BaudrateLabel = widget.NewLabel("Baudrate:")
-	global.Ui.Baudrate = widget.NewEntry()
-	global.Ui.Baudrate.SetText(fmt.Sprint(global.DefaultBaudrate))
+	global.Ui.Baudrate = widget.NewSelect(utils.IntsToStrings(global.Baudrates), func(s string) {})
+	global.Ui.Baudrate.SetSelected(fmt.Sprint(global.DefaultBaudrate))
 
 	// Create refresh graph label and dropdown
 	global.Ui.GraphRefreshIntervalLabel = widget.NewLabel("Graph Refresh Interval:")
-	global.Ui.GraphRefreshInterval = widget.NewSelect([]string{"0.25s", "0.5s", "1s", "2s"}, func(selected string) {})
-	global.Ui.GraphRefreshInterval.SetSelected("0.5s")
+	global.Ui.GraphRefreshInterval = widget.NewSelect(utils.DurationsToStrings(global.RefreshIntervals), func(s string) {})
+	global.Ui.GraphRefreshInterval.SetSelected(fmt.Sprintf("%.2gs", global.DefaultRefreshInterval.Seconds()))
 
 	// Create connect button
 	global.Ui.Connect = widget.NewButton("Connect", func() {})

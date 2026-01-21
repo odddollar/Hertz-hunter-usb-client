@@ -2,14 +2,19 @@ package global
 
 import (
 	"image"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
 )
 
-const (
+var (
+	Baudrates       = []int{9600, 19200, 38400, 57600, 115200}
 	DefaultBaudrate = 115200
+
+	RefreshIntervals       = []time.Duration{250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second, 2 * time.Second}
+	DefaultRefreshInterval = 500 * time.Millisecond
 )
 
 // Track current graph image
@@ -29,7 +34,7 @@ var Ui struct {
 	Ports                     *widget.Select
 	PortsRefresh              *widget.Button
 	BaudrateLabel             *widget.Label
-	Baudrate                  *widget.Entry
+	Baudrate                  *widget.Select
 	GraphRefreshIntervalLabel *widget.Label
 	GraphRefreshInterval      *widget.Select
 	Connect                   *widget.Button
