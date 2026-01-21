@@ -32,20 +32,15 @@ func main() {
 	global.A = app.New()
 	global.W = global.A.NewWindow("Hertz Hunter USB Client")
 
-	// Create port selection dropdown with actual serial ports
-	availablePorts := usbSerial.GetAvailablePorts()
-	global.Ui.Ports = widget.NewSelect(availablePorts, func(selected string) {
-
-	})
+	// Create port selection dropdown with serial ports
+	global.Ui.Ports = widget.NewSelect([]string{}, func(selected string) {})
 
 	// Create connect button
-	global.Ui.Connect = widget.NewButton("Connect", func() {
-
-	})
+	global.Ui.Connect = widget.NewButton("Connect", func() {})
 
 	// Create refresh ports button
 	global.Ui.PortsRefesh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
-		usbSerial.RefreshPorts()
+		usbSerial.RefreshPortsDisplay()
 	})
 
 	// Create graph display area
@@ -68,6 +63,9 @@ func main() {
 		nil,
 		global.Ui.Graph,
 	))
+
+	// Initial refresh of available ports
+	usbSerial.RefreshPortsDisplay()
 
 	// Show window and run app
 	global.W.Resize(fyne.NewSize(800, 600))

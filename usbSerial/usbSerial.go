@@ -2,28 +2,29 @@ package usbSerial
 
 import (
 	"Hertz-Hunter-USB-Client/global"
+	"errors"
 
 	"go.bug.st/serial"
 )
 
 // Get list of available serial ports
-func GetAvailablePorts() []string {
+func getAvailablePorts() []string {
 	ports, err := serial.GetPortsList()
 	if err != nil {
-
+		global.ShowError(err)
 	}
 
 	return ports
 }
 
 // Refresh list of available serial ports
-func RefreshPorts() {
-	availablePorts := GetAvailablePorts()
+func RefreshPortsDisplay() {
+	availablePorts := getAvailablePorts()
 	global.Ui.Ports.Options = availablePorts
 
-	// Select first option if only one
-	if len(availablePorts) == 1 {
-		global.Ui.Ports.SetSelected(availablePorts[0])
+	// Show error if no ports found
+	if len(availablePorts) == 0 {
+		global.ShowError(errors.New("no serial ports found"))
 	}
 
 	global.Ui.Ports.Refresh()
