@@ -1,9 +1,15 @@
 package global
 
 import (
+	"image"
+
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
 )
+
+// Track current graph image
+var CurrentGraph image.Image
 
 // Main app elements
 var (
@@ -15,4 +21,5 @@ var (
 var Ui struct {
 	Ports   *widget.Select
 	Connect *widget.Button
+	Graph   *canvas.Image
 }
