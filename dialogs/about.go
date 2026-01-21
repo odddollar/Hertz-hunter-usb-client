@@ -2,27 +2,29 @@ package dialogs
 
 import (
 	"Hertz-Hunter-USB-Client/global"
-	"fmt"
+	"net/url"
 
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
+	"fyne.io/x/fyne/dialog"
 )
 
+// Use Fyne-X extensions to create about window
 func ShowAbout() {
-	// Create layout
-	// Separate markdown widget for better spacing
-	d := container.NewVBox(
-		widget.NewRichTextFromMarkdown(fmt.Sprintf("Version: **%s**", global.A.Metadata().Version)),
-		widget.NewRichTextFromMarkdown("Client for USB communication with a Hertz Hunter device"),
-		widget.NewRichTextFromMarkdown("Source: [example.com](https://example.com)"),
-	)
+	// Parse urls for documentation
+	HHDocumentation, _ := url.Parse("https://github.com/odddollar/Hertz-hunter")
+	HHClientDocumentation, _ := url.Parse("https://example.com")
 
-	// Show information dialog with layout
-	dialog.ShowCustom(
-		"About",
-		"OK",
-		d,
-		global.W,
-	)
+	links := []*widget.Hyperlink{
+		widget.NewHyperlink("Hertz Hunter Documentation", HHDocumentation),
+		widget.NewHyperlink("Hertz Hunter USB Client Documentation", HHClientDocumentation),
+	}
+
+	// Markdown program description
+	content := "USB serial client for the **Hertz Hunter** spectrum analyser"
+
+	// Use Fyne-X's about dialog
+	d := dialog.NewAbout(content, links, global.A, global.W)
+	d.Resize(fyne.NewSize(0, 402)) // 0 width as will always be at least content's min-width
+	d.Show()
 }
