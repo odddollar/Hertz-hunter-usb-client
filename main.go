@@ -4,6 +4,7 @@ import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/usbSerial"
+	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
 	"image"
 	"image/color"
@@ -106,7 +107,7 @@ func main() {
 			container.NewBorder(
 				nil,
 				nil,
-				nil,
+				widgets.NewSpacer(widget.NewButtonWithIcon("", theme.InfoIcon(), func() {}).MinSize()), // Keeps title centred
 				global.Ui.About,
 				global.Ui.Title,
 			),
