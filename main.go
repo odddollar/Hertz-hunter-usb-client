@@ -51,7 +51,7 @@ func main() {
 	global.Ui.GraphRefreshInterval.SetSelected(fmt.Sprintf("%.2gs", global.DefaultRefreshInterval.Seconds()))
 
 	// Create connect button
-	global.Ui.Connect = widget.NewButton("Connect", usb.ConnectUSBSerial)
+	global.Ui.Connect = widget.NewButton("Connect", func() { go usb.ConnectUSBSerial() })
 	global.Ui.Connect.Importance = widget.HighImportance
 
 	// Create graph display area
