@@ -13,7 +13,7 @@ import (
 func ShowAbout() {
 	// Parse urls for documentation
 	HHDocumentation, _ := url.Parse("https://github.com/odddollar/Hertz-hunter")
-	HHClientDocumentation, _ := url.Parse("https://example.com")
+	HHClientDocumentation, _ := url.Parse("https://github.com/odddollar/Hertz-hunter-usb-client")
 
 	links := []*widget.Hyperlink{
 		widget.NewHyperlink("Hertz Hunter Documentation", HHDocumentation),
