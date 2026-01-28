@@ -5,15 +5,13 @@ import (
 	"Hertz-Hunter-USB-Client/global"
 	"bufio"
 	"errors"
-	"fmt"
 	"time"
 
 	"go.bug.st/serial"
 )
 
-// Globally store port and
-var port serial.Port
-var serialReader *bufio.Reader
+// Global connection object store
+var connection Connection
 
 // Attempt to connect to usb serial
 func ConnectUSBSerial() {
@@ -37,12 +35,11 @@ func ConnectUSBSerial() {
 
 	// Connect to serial port
 	var err error
-	port, err = serial.Open(portName, mode)
+	port, err := serial.Open(portName, mode)
 	if err != nil {
 		dialogs.ShowError(err)
 		return
 	}
-	defer port.Close()
 	port.SetReadTimeout(50 * time.Millisecond)
 
 	// Re-assert to not reset on connection
@@ -50,45 +47,18 @@ func ConnectUSBSerial() {
 	port.SetRTS(false)
 
 	// Create serial reader
-	serialReader = bufio.NewReader(port)
+	reader := bufio.NewReader(port)
 
-	time.Sleep(2 * time.Second)
-
-	isSerialConnected()
-
-	// message := "Hello World!\n"
-	// if n, err := port.Write([]byte(message)); err != nil {
-	// 	panic(err)
-	// } else {
-	// 	fmt.Printf("Sent %d bytes\n", n)
-	// }
-
-	// reader := bufio.NewReader(port)
-
-	// line, err := reader.ReadString('\n')
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Println("RX:", line)
-}
-
-// Checks if the serial port is connected with ping messages
-func isSerialConnected() bool {
-	// Send ping message
-	message := `{"event":"get","location":"ping","payload":{}}`
-	if _, err := port.Write([]byte(message + "\n")); err != nil {
-		dialogs.ShowError(err)
-		return false
+	// Create connection object with port and reader
+	connection = Connection{
+		Port:   port,
+		Reader: reader,
 	}
 
-	// Read response
-	if line, err := serialReader.ReadString('\n'); err != nil {
-		dialogs.ShowError(err)
-		return false
+	// Show success message if connected
+	if connection.IsSerialConnected() {
+		dialogs.ShowSuccess("Successfully connected to port")
 	} else {
-		fmt.Println(line)
+		dialogs.ShowError(errors.New("failed to connect to port"))
 	}
-
-	return true
 }
