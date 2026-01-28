@@ -51,14 +51,14 @@ func ConnectUSBSerial() {
 
 	// Create connection object with port and reader
 	connection = Connection{
-		Port:   port,
-		Reader: reader,
+		port:   port,
+		reader: reader,
 	}
 
 	// Show success message if connected
 	if connection.IsSerialConnected() {
 		dialogs.ShowSuccess("Successfully connected to port")
-	} else {
-		dialogs.ShowError(errors.New("failed to connect to port"))
 	}
+
+	connection.Disconnect()
 }
