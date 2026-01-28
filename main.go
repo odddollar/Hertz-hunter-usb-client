@@ -7,7 +7,6 @@ import (
 	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
-	"image"
 	"image/color"
 
 	"fyne.io/fyne/v2"
@@ -19,19 +18,6 @@ import (
 )
 
 func main() {
-	// Create a blue image for testing
-	width, height := 400, 300
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	blue := color.RGBA{0, 0, 255, 255} // Blue color
-
-	// Fill the entire image with blue
-	for y := range height {
-		for x := range width {
-			img.Set(x, y, blue)
-		}
-	}
-	global.CurrentGraph = img
-
 	// Create window
 	global.A = app.New()
 	global.W = global.A.NewWindow("Hertz Hunter USB Client")
@@ -70,6 +56,8 @@ func main() {
 
 	// Create graph display area
 	global.Ui.Graph = canvas.NewImageFromImage(global.CurrentGraph)
+	global.Ui.Graph.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
+	global.Ui.Graph.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
 
 	// Create accordion for configuration items
 	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration",
