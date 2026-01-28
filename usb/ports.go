@@ -1,4 +1,4 @@
-package usbSerial
+package usb
 
 import (
 	"Hertz-Hunter-USB-Client/dialogs"

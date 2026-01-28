@@ -3,7 +3,7 @@ package main
 import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
-	"Hertz-Hunter-USB-Client/usbSerial"
+	"Hertz-Hunter-USB-Client/usb"
 	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
@@ -52,7 +52,7 @@ func main() {
 	global.Ui.Ports = widget.NewSelect([]string{}, func(s string) {})
 
 	// Create refresh ports button
-	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), usbSerial.RefreshPortsDisplay)
+	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), usb.RefreshPortsDisplay)
 
 	// Create baudrate label and entry
 	global.Ui.BaudrateLabel = widget.NewLabel("Baudrate:")
@@ -119,7 +119,7 @@ func main() {
 	))
 
 	// Initial refresh of available ports
-	usbSerial.RefreshPortsDisplay()
+	usb.RefreshPortsDisplay()
 
 	// Show window and run app
 	global.W.Resize(fyne.NewSize(800, 600))
