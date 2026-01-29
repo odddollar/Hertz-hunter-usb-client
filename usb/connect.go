@@ -59,13 +59,16 @@ func ConnectUSBSerial() {
 		reader: reader,
 	}
 
-	// Show success message if connected
-	if connection.IsSerialConnected() {
-		dialogs.ShowSuccess("Successfully connected to port")
-	} else {
-		// Enable ui elements if connection failed
+	// Check if connection succeeded
+	connected, err := connection.IsSerialConnected()
+	if !connected {
 		global.EnableConnectionUI()
+		dialogs.ShowError(err)
+		return
 	}
 
+	dialogs.ShowSuccess("Successfully connected to port")
+
+	// Temporary
 	connection.Disconnect()
 }

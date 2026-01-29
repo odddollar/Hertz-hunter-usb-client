@@ -1,7 +1,7 @@
 package usb
 
 import (
-	"Hertz-Hunter-USB-Client/dialogs"
+	"Hertz-Hunter-USB-Client/global"
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -17,6 +17,7 @@ type Connection struct {
 
 // Disconnect connection
 func (c *Connection) Disconnect() {
+	global.EnableConnectionUI()
 	c.port.Close()
 }
 
@@ -62,18 +63,16 @@ func (c *Connection) Receive() (SerialFrame, error) {
 }
 
 // Checks if the serial port is connected with ping messages
-func (c *Connection) IsSerialConnected() bool {
+func (c *Connection) IsSerialConnected() (bool, error) {
 	// Send ping message
 	if err := c.Send(SerialFrame{Event: "get", Location: "ping", Payload: map[string]any{}}); err != nil {
-		dialogs.ShowError(err)
-		return false
+		return false, err
 	}
 
 	// Read response
 	if _, err := c.Receive(); err != nil {
-		dialogs.ShowError(err)
-		return false
+		return false, err
 	}
 
-	return true
+	return true, nil
 }
