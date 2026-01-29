@@ -1,6 +1,9 @@
 package global
 
-import "time"
+import (
+	"Hertz-Hunter-USB-Client/usb"
+	"time"
+)
 
 var (
 	// Baudrates used in ui dropdown
@@ -17,3 +20,6 @@ const (
 	GraphWidth  = 1000
 	GraphHeight = 600
 )
+
+// Global connection object store
+var Connection *usb.Connection

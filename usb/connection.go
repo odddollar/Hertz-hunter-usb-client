@@ -1,11 +1,11 @@
 package usb
 
 import (
-	"Hertz-Hunter-USB-Client/global"
 	"bufio"
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"go.bug.st/serial"
 )
@@ -18,10 +18,71 @@ type Connection struct {
 	mu sync.Mutex
 }
 
+// Create new connection object
+func NewConnection(portName string, baud int) (*Connection, error) {
+	// Setup baud and don't reset
+	mode := &serial.Mode{
+		BaudRate: baud,
+		InitialStatusBits: &serial.ModemOutputBits{
+			DTR: false,
+			RTS: false,
+		},
+	}
+
+	// Connect to serial port
+	port, err := serial.Open(portName, mode)
+	if err != nil {
+		return nil, err
+	}
+	port.SetReadTimeout(50 * time.Millisecond)
+
+	// Re-assert to not reset on connection
+	port.SetDTR(false)
+	port.SetRTS(false)
+
+	// Create serial reader
+	reader := bufio.NewReader(port)
+
+	// Create connection object with port and reader
+	connection := Connection{
+		port:   port,
+		reader: reader,
+	}
+
+	// Check if connection succeeded
+	if _, err := connection.ping(); err != nil {
+		connection.Disconnect() // Close serial port to prevent future "Port busy" errors
+		return nil, err
+	}
+
+	return &connection, nil
+}
+
 // Disconnect connection
 func (c *Connection) Disconnect() {
-	global.EnableConnectionUI()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.port.Close()
+}
+
+// Send message frame over serial and return response
+func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
+	// Lock mutex so only one message in transit at time
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	// Send message
+	if err := c.send(msg); err != nil {
+		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
+	}
+
+	// Read response
+	rec, err := c.receive()
+	if err != nil {
+		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
+	}
+
+	return rec, nil
 }
 
 // Send message
@@ -65,28 +126,8 @@ func (c *Connection) receive() (SerialFrame, error) {
 	return msg, nil
 }
 
-// Sends message frame over serial and returns response
-func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
-	// Lock mutex so only one message in transit at time
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	// Send ping message
-	if err := c.send(msg); err != nil {
-		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
-	}
-
-	// Read response
-	rec, err := c.receive()
-	if err != nil {
-		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
-	}
-
-	return rec, nil
-}
-
 // Checks if the serial port is connected with ping messages
-func (c *Connection) IsSerialConnected() (bool, error) {
+func (c *Connection) ping() (bool, error) {
 	// Send ping message
 	if _, err := c.Communicate(SerialFrame{Event: "get", Location: "ping", Payload: map[string]any{}}); err != nil {
 		return false, err

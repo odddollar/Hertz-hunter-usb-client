@@ -1,9 +1,9 @@
 package main
 
 import (
+	"Hertz-Hunter-USB-Client/callbacks"
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
-	"Hertz-Hunter-USB-Client/usb"
 	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
@@ -38,7 +38,7 @@ func main() {
 	global.Ui.Ports = widget.NewSelect([]string{}, func(s string) {})
 
 	// Create refresh ports button
-	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), usb.RefreshPortsDisplay)
+	global.Ui.PortsRefresh = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), callbacks.RefreshPortsDisplay)
 
 	// Create baudrate label and entry
 	global.Ui.BaudrateLabel = widget.NewLabel("Baudrate:")
@@ -51,7 +51,7 @@ func main() {
 	global.Ui.GraphRefreshInterval.SetSelected(fmt.Sprintf("%.2gs", global.DefaultRefreshInterval.Seconds()))
 
 	// Create connect button
-	global.Ui.Connect = widget.NewButton("Connect", func() { go usb.ConnectUSBSerial() })
+	global.Ui.Connect = widget.NewButton("Connect", func() { go callbacks.ConnectUSBSerial() })
 	global.Ui.Connect.Importance = widget.HighImportance
 
 	// Create graph display area
@@ -107,7 +107,7 @@ func main() {
 	))
 
 	// Initial refresh of available ports
-	usb.RefreshPortsDisplay()
+	callbacks.RefreshPortsDisplay()
 
 	// Show window and run app
 	global.W.Resize(fyne.NewSize(800, 600))
