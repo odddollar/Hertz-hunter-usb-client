@@ -44,7 +44,7 @@ func ConnectUSBSerial() {
 		dialogs.ShowError(err)
 		return
 	}
-	port.SetReadTimeout(50 * time.Millisecond)
+	port.SetReadTimeout(10 * time.Millisecond)
 
 	// Re-assert to not reset on connection
 	port.SetDTR(false)
@@ -62,6 +62,7 @@ func ConnectUSBSerial() {
 	// Check if connection succeeded
 	connected, err := connection.IsSerialConnected()
 	if !connected {
+		connection.Disconnect() // Close serial port to prevent future "Port busy" errors
 		global.EnableConnectionUI()
 		dialogs.ShowError(err)
 		return
