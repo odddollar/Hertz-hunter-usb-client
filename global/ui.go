@@ -31,3 +31,23 @@ var Ui struct {
 	Connect                   *widget.Button
 	Graph                     *canvas.Image
 }
+
+// Disable ui elements related to connection
+func DisableConnectionUI() {
+	fyne.Do(func() {
+		Ui.Ports.Disable()
+		Ui.PortsRefresh.Disable()
+		Ui.Baudrate.Disable()
+		Ui.Connect.Disable()
+	})
+}
+
+// Enable ui elements related to connection
+func EnableConnectionUI() {
+	fyne.Do(func() {
+		Ui.Ports.Enable()
+		Ui.PortsRefresh.Enable()
+		Ui.Baudrate.Enable()
+		Ui.Connect.Enable()
+	})
+}

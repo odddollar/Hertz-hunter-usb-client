@@ -21,6 +21,9 @@ func ConnectUSBSerial() {
 		return
 	}
 
+	// Disable ui elements whilst attempting connection
+	global.DisableConnectionUI()
+
 	// Get baudrate from dropdown
 	mode := &serial.Mode{
 		BaudRate: global.Baudrates[global.Ui.Baudrate.SelectedIndex()],
@@ -37,6 +40,7 @@ func ConnectUSBSerial() {
 	var err error
 	port, err := serial.Open(portName, mode)
 	if err != nil {
+		global.EnableConnectionUI()
 		dialogs.ShowError(err)
 		return
 	}
@@ -58,6 +62,9 @@ func ConnectUSBSerial() {
 	// Show success message if connected
 	if connection.IsSerialConnected() {
 		dialogs.ShowSuccess("Successfully connected to port")
+	} else {
+		// Enable ui elements if connection failed
+		global.EnableConnectionUI()
 	}
 
 	connection.Disconnect()
