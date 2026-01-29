@@ -29,6 +29,7 @@ var Ui struct {
 	GraphRefreshIntervalLabel *widget.Label
 	GraphRefreshInterval      *widget.Select
 	Connect                   *widget.Button
+	Disconnect                *widget.Button
 	Graph                     *canvas.Image
 }
 
@@ -50,4 +51,15 @@ func EnableConnectionUI() {
 		Ui.Baudrate.Enable()
 		Ui.Connect.Enable()
 	})
+}
+
+// Switch which connection button is visible
+func SwitchConnectionButtons() {
+	if !Ui.Connect.Hidden && Ui.Disconnect.Hidden {
+		Ui.Connect.Hide()
+		Ui.Disconnect.Show()
+	} else if Ui.Connect.Hidden && !Ui.Disconnect.Hidden {
+		Ui.Connect.Show()
+		Ui.Disconnect.Hide()
+	}
 }

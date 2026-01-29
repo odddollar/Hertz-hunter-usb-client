@@ -5,6 +5,8 @@ import (
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/usb"
 	"errors"
+
+	"fyne.io/fyne/v2"
 )
 
 // Attempt to connect to usb serial
@@ -35,7 +37,8 @@ func ConnectUSBSerial() {
 
 	dialogs.ShowSuccess("Successfully connected to port")
 
-	// Temporary
-	global.Connection.Disconnect()
-	global.EnableConnectionUI()
+	// Switch which button is visible
+	fyne.Do(func() {
+		global.SwitchConnectionButtons()
+	})
 }

@@ -54,6 +54,10 @@ func main() {
 	global.Ui.Connect = widget.NewButton("Connect", func() { go callbacks.ConnectUSBSerial() })
 	global.Ui.Connect.Importance = widget.HighImportance
 
+	// Create disconnect button
+	global.Ui.Disconnect = widget.NewButton("Disconnect", callbacks.DisconnectUSBSerial)
+	global.Ui.Disconnect.Hide()
+
 	// Create graph display area
 	global.Ui.Graph = canvas.NewImageFromImage(global.CurrentGraph)
 	global.Ui.Graph.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
@@ -84,6 +88,7 @@ func main() {
 				),
 			),
 			global.Ui.Connect,
+			global.Ui.Disconnect,
 		),
 	))
 	configAccordion.Open(0)
