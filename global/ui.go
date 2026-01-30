@@ -39,6 +39,7 @@ func DisableConnectionUI() {
 		Ui.Ports.Disable()
 		Ui.PortsRefresh.Disable()
 		Ui.Baudrate.Disable()
+		Ui.GraphRefreshInterval.Disable()
 		Ui.Connect.Disable()
 	})
 }
@@ -49,6 +50,7 @@ func EnableConnectionUI() {
 		Ui.Ports.Enable()
 		Ui.PortsRefresh.Enable()
 		Ui.Baudrate.Enable()
+		Ui.GraphRefreshInterval.Enable()
 		Ui.Connect.Enable()
 	})
 }

@@ -26,6 +26,9 @@ func ConnectUSBSerial() {
 	// Get baud rate
 	baudRate := global.Baudrates[global.Ui.Baudrate.SelectedIndex()]
 
+	// Get poll rate
+	pollRate := global.RefreshIntervals[global.Ui.GraphRefreshInterval.SelectedIndex()]
+
 	// Create new connection
 	var err error
 	global.Connection, err = usb.NewConnection(portName, baudRate)
@@ -41,4 +44,7 @@ func ConnectUSBSerial() {
 	fyne.Do(func() {
 		global.SwitchConnectionButtons()
 	})
+
+	// Start polling for values
+	global.Connection.StartPollValues(pollRate)
 }
