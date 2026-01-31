@@ -11,8 +11,8 @@ var (
 	DefaultBaudrate = 115200
 
 	// Graph refresh intervals used in ui dropdown
-	RefreshIntervals       = []time.Duration{250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second, 2 * time.Second}
-	DefaultRefreshInterval = 500 * time.Millisecond
+	RefreshIntervals       = []time.Duration{100 * time.Millisecond, 250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second}
+	DefaultRefreshInterval = 250 * time.Millisecond
 )
 
 // Dimensions for graph image

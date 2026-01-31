@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -135,7 +136,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, errors.New(msg.Payload["status"].(string))
 	}
 
-	// fmt.Println(msg)
+	fmt.Println(msg)
 
 	return msg, nil
 }
