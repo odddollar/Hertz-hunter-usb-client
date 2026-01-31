@@ -2,7 +2,6 @@ package usb
 
 import (
 	"bufio"
-	"context"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -11,13 +10,19 @@ import (
 	"go.bug.st/serial"
 )
 
-// Global connection struct for handling messaging and connection lifetime
+// Format of serial frame
+type SerialFrame struct {
+	Event    string         `json:"event"`
+	Location string         `json:"location"`
+	Payload  map[string]any `json:"payload"`
+}
+
+// Handles messaging and connection lifetime
 type Connection struct {
 	port   serial.Port
 	reader *bufio.Reader
 
-	mu     sync.Mutex
-	cancel context.CancelFunc
+	mu sync.Mutex
 }
 
 // Create new connection object
@@ -85,38 +90,6 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	}
 
 	return rec, nil
-}
-
-// Start polling for rssi values from device
-func (c *Connection) StartPollValues(period time.Duration) {
-	ctx, cancel := context.WithCancel(context.Background())
-	c.cancel = cancel
-
-	go func() {
-		// Start ticker
-		ticker := time.NewTicker(period)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				_, err := c.Communicate(SerialFrame{Event: "get", Location: "values", Payload: map[string]any{}})
-				if err != nil {
-					fmt.Printf("Periodic communication error: %v\n", err)
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-}
-
-// Cancels rssi polling
-func (c *Connection) StopPollValues() {
-	if c.cancel != nil {
-		c.cancel()
-		c.cancel = nil
-	}
 }
 
 // Send message

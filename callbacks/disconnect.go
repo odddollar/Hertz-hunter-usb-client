@@ -9,7 +9,7 @@ func DisconnectUSBSerial() {
 	global.SwitchConnectionButtons()
 
 	// Cancel polling
-	global.Connection.StopPollValues()
+	global.Schema.StopPollValues()
 
 	global.Connection.Disconnect()
 	global.EnableConnectionUI()

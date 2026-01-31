@@ -3,6 +3,7 @@ package callbacks
 import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
+	"Hertz-Hunter-USB-Client/schema"
 	"Hertz-Hunter-USB-Client/usb"
 	"errors"
 
@@ -38,7 +39,8 @@ func ConnectUSBSerial() {
 		return
 	}
 
-	dialogs.ShowSuccess("Successfully connected to port")
+	// Create new schema
+	global.Schema = schema.NewSchema(global.Connection)
 
 	// Switch which button is visible
 	fyne.Do(func() {
@@ -46,5 +48,5 @@ func ConnectUSBSerial() {
 	})
 
 	// Start polling for values
-	global.Connection.StartPollValues(pollRate)
+	global.Schema.StartPollValues(pollRate)
 }
