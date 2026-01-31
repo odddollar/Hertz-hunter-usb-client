@@ -4,7 +4,6 @@ import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
 	"Hertz-Hunter-USB-Client/schema"
-	"Hertz-Hunter-USB-Client/usb"
 	"errors"
 
 	"fyne.io/fyne/v2"
@@ -30,17 +29,14 @@ func ConnectUSBSerial() {
 	// Get poll rate
 	pollRate := global.RefreshIntervals[global.Ui.GraphRefreshInterval.SelectedIndex()]
 
-	// Create new connection
+	// Create new schema
 	var err error
-	global.Connection, err = usb.NewConnection(portName, baudRate)
+	global.Schema, err = schema.NewSchema(portName, baudRate)
 	if err != nil {
 		global.EnableConnectionUI()
 		dialogs.ShowError(err)
 		return
 	}
-
-	// Create new schema
-	global.Schema = schema.NewSchema(global.Connection)
 
 	// Switch which button is visible
 	fyne.Do(func() {

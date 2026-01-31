@@ -8,9 +8,8 @@ func DisconnectUSBSerial() {
 	// Switch which button is visible
 	global.SwitchConnectionButtons()
 
-	// Cancel polling
-	global.Schema.StopPollValues()
+	// Cancel connection
+	global.Schema.Stop()
 
-	global.Connection.Disconnect()
 	global.EnableConnectionUI()
 }

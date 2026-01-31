@@ -14,9 +14,24 @@ type Schema struct {
 }
 
 // Create new schema object
-func NewSchema(con *usb.Connection) *Schema {
+func NewSchema(portName string, baud int) (*Schema, error) {
+	con, err := usb.NewConnection(portName, baud)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Schema{
 		connection: con,
+	}, nil
+}
+
+// Cancels rssi polling and disconnects device
+func (c *Schema) Stop() {
+	c.connection.Disconnect()
+
+	if c.pollingCancel != nil {
+		c.pollingCancel()
+		c.pollingCancel = nil
 	}
 }
 
@@ -42,12 +57,4 @@ func (c *Schema) StartPollValues(period time.Duration) {
 			}
 		}
 	}()
-}
-
-// Cancels rssi polling
-func (c *Schema) StopPollValues() {
-	if c.pollingCancel != nil {
-		c.pollingCancel()
-		c.pollingCancel = nil
-	}
 }

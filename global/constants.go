@@ -2,7 +2,6 @@ package global
 
 import (
 	"Hertz-Hunter-USB-Client/schema"
-	"Hertz-Hunter-USB-Client/usb"
 	"time"
 )
 
@@ -22,6 +21,5 @@ const (
 	GraphHeight = 600
 )
 
-// Global connection objects store
-var Connection *usb.Connection
+// Global schema object store
 var Schema *schema.Schema
