@@ -69,7 +69,11 @@ func NewConnection(portName string, baud int) (*Connection, error) {
 func (c *Connection) Disconnect() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.port.Close()
+
+	if c.port != nil {
+		c.port.Close()
+		c.port = nil
+	}
 }
 
 // Send message frame over serial and return response

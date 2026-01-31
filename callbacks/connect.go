@@ -3,6 +3,7 @@ package callbacks
 import (
 	"Hertz-Hunter-USB-Client/dialogs"
 	"Hertz-Hunter-USB-Client/global"
+	"Hertz-Hunter-USB-Client/graph"
 	"Hertz-Hunter-USB-Client/schema"
 	"errors"
 
@@ -39,14 +40,47 @@ func ConnectUSBSerial() {
 	}
 
 	// Switch which button is visible
-	fyne.Do(func() {
-		global.SwitchConnectionButtons()
-	})
+	fyne.Do(func() { global.SwitchConnectionButtons() })
 
 	// Start polling for values
-	errCh := global.Schema.StartPollValues(pollRate)
-	if err = <-errCh; err != nil {
-		global.EnableConnectionUI()
-		dialogs.ShowError(err)
-	}
+	valuesCh, errCh := global.Schema.StartPollValues(pollRate)
+
+	go func() {
+		for {
+			select {
+			case values, ok := <-valuesCh: // Update graph
+				if !ok {
+					return
+				}
+
+				img := graph.CreateGraph(
+					values,
+					global.GraphWidth,
+					global.GraphHeight,
+				)
+
+				global.CurrentGraph = img
+				global.Ui.Graph.Image = global.CurrentGraph
+				fyne.Do(func() { global.Ui.Graph.Refresh() })
+
+			case err, ok := <-errCh: // Handle errors
+				if !ok {
+					return
+				}
+
+				// Stop and clear schema
+				global.Schema.Stop()
+				global.Schema = nil
+
+				// Update ui
+				fyne.Do(func() {
+					global.EnableConnectionUI()
+					global.SwitchConnectionButtons()
+					dialogs.ShowError(err)
+				})
+
+				return
+			}
+		}
+	}()
 }

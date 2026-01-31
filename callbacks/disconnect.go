@@ -7,9 +7,11 @@ import (
 func DisconnectUSBSerial() {
 	// Switch which button is visible
 	global.SwitchConnectionButtons()
+	global.EnableConnectionUI()
 
 	// Cancel connection
-	global.Schema.Stop()
-
-	global.EnableConnectionUI()
+	if global.Schema != nil {
+		global.Schema.Stop()
+		global.Schema = nil
+	}
 }
