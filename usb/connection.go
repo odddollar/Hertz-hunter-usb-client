@@ -3,6 +3,7 @@ package usb
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"sync"
 	"time"
 
@@ -129,6 +130,9 @@ func (c *Connection) receive() (SerialFrame, error) {
 	err = json.Unmarshal([]byte(line), &msg)
 	if err != nil {
 		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
+	}
+	if msg.Event == "error" {
+		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, errors.New(msg.Payload["status"].(string))
 	}
 
 	// fmt.Println(msg)
