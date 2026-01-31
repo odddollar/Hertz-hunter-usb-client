@@ -73,16 +73,16 @@ func SwitchConnectionButtons() {
 }
 
 // Switch which band labels are visible
-func SwitchBandLabels(highband bool) {
-	if highband {
-		fyne.Do(func() {
-			Ui.HighbandFrequencyLabels.Show()
-			Ui.LowbandFrequencyLabels.Hide()
-		})
-	} else {
+func SwitchBandLabels(lowband bool) {
+	if lowband {
 		fyne.Do(func() {
 			Ui.HighbandFrequencyLabels.Hide()
 			Ui.LowbandFrequencyLabels.Show()
+		})
+	} else {
+		fyne.Do(func() {
+			Ui.HighbandFrequencyLabels.Show()
+			Ui.LowbandFrequencyLabels.Hide()
 		})
 	}
 }

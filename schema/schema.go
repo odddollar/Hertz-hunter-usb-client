@@ -12,6 +12,12 @@ type Schema struct {
 	pollingCancel context.CancelFunc
 }
 
+// Used to return lowband state with values on polling
+type ValuesResult struct {
+	Values  []int
+	Lowband bool
+}
+
 // Create new schema object
 func NewSchema(portName string, baud int) (*Schema, error) {
 	con, err := usb.NewConnection(portName, baud)
@@ -38,11 +44,11 @@ func (s *Schema) Stop() {
 }
 
 // Start polling for rssi values from device
-func (s *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan error) {
+func (s *Schema) StartPollValues(period time.Duration) (<-chan ValuesResult, <-chan error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	s.pollingCancel = cancel
 
-	valuesCh := make(chan []int)
+	valuesCh := make(chan ValuesResult)
 	errCh := make(chan error, 1)
 
 	go func() {
@@ -71,8 +77,14 @@ func (s *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan err
 					values[i] = int(f)
 				}
 
+				// Get lowband state
+				lowband, _ := data.Payload["lowband"].(bool)
+
 				// Send data over channel
-				valuesCh <- values
+				valuesCh <- ValuesResult{
+					Values:  values,
+					Lowband: lowband,
+				}
 			case <-ctx.Done():
 				return
 			}

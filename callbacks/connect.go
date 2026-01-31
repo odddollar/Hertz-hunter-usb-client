@@ -67,7 +67,7 @@ func ConnectUSBSerial() {
 				}
 
 				img := graph.CreateGraph(
-					values,
+					values.Values,
 					global.GraphWidth,
 					global.GraphHeight,
 					lowCalibration,
@@ -76,7 +76,11 @@ func ConnectUSBSerial() {
 
 				global.CurrentGraph = img
 				global.Ui.Graph.Image = global.CurrentGraph
-				fyne.Do(func() { global.Ui.Graph.Refresh() })
+
+				fyne.Do(func() {
+					global.Ui.Graph.Refresh()
+					global.SwitchBandLabels(values.Lowband)
+				})
 
 			case err, ok := <-errCh: // Handle errors
 				if !ok {
