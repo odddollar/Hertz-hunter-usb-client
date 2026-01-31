@@ -3,7 +3,6 @@ package usb
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"sync"
 	"time"
 
@@ -132,7 +131,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 		return SerialFrame{Event: "", Location: "", Payload: map[string]any{}}, err
 	}
 
-	fmt.Println(msg)
+	// fmt.Println(msg)
 
 	return msg, nil
 }

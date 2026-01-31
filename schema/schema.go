@@ -63,8 +63,15 @@ func (c *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan err
 					return
 				}
 
-				// Send data back over channel
-				values, _ := data.Payload["values"].([]int)
+				// Convert data to proper type
+				raw, _ := data.Payload["values"].([]any)
+				values := make([]int, len(raw))
+				for i, v := range raw {
+					f, _ := v.(float64)
+					values[i] = int(f)
+				}
+
+				// Send data over channel
 				valuesCh <- values
 			case <-ctx.Done():
 				return

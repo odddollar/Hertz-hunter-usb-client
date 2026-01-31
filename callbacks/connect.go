@@ -57,6 +57,7 @@ func ConnectUSBSerial() {
 					values,
 					global.GraphWidth,
 					global.GraphHeight,
+					500, 1000,
 				)
 
 				global.CurrentGraph = img

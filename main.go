@@ -7,6 +7,7 @@ import (
 	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
+	"image"
 	"image/color"
 
 	"fyne.io/fyne/v2"
@@ -59,6 +60,7 @@ func main() {
 	global.Ui.Disconnect.Hide()
 
 	// Create graph display area
+	global.CurrentGraph = image.NewGray(image.Rect(0, 0, global.GraphWidth, global.GraphHeight))
 	global.Ui.Graph = canvas.NewImageFromImage(global.CurrentGraph)
 	global.Ui.Graph.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
 	global.Ui.Graph.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
