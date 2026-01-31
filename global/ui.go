@@ -31,6 +31,8 @@ var Ui struct {
 	Connect                   *widget.Button
 	Disconnect                *widget.Button
 	Graph                     *canvas.Image
+	HighbandFrequencyLabels   *fyne.Container
+	LowbandFrequencyLabels    *fyne.Container
 }
 
 // Disable ui elements related to connection
@@ -63,5 +65,16 @@ func SwitchConnectionButtons() {
 	} else if Ui.Connect.Hidden && !Ui.Disconnect.Hidden {
 		Ui.Connect.Show()
 		Ui.Disconnect.Hide()
+	}
+}
+
+// Switch which band labels are visible
+func SwitchBandLabels(highband bool) {
+	if highband {
+		Ui.HighbandFrequencyLabels.Show()
+		Ui.LowbandFrequencyLabels.Hide()
+	} else {
+		Ui.HighbandFrequencyLabels.Hide()
+		Ui.LowbandFrequencyLabels.Show()
 	}
 }

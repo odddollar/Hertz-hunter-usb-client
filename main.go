@@ -65,6 +65,49 @@ func main() {
 	global.Ui.Graph.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
 	global.Ui.Graph.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
 
+	// Create highband labels
+	{
+		left := widget.NewLabel("5645MHz")
+		left.Alignment = fyne.TextAlignLeading
+		left.TextStyle = fyne.TextStyle{Bold: true}
+
+		middle := widget.NewLabel("5795MHz")
+		middle.Alignment = fyne.TextAlignCenter
+		middle.TextStyle = fyne.TextStyle{Bold: true}
+
+		right := widget.NewLabel("5945MHz")
+		right.Alignment = fyne.TextAlignTrailing
+		right.TextStyle = fyne.TextStyle{Bold: true}
+
+		global.Ui.HighbandFrequencyLabels = container.NewGridWithColumns(3,
+			left,
+			middle,
+			right,
+		)
+	}
+
+	// Create lowband labels
+	{
+		left := widget.NewLabel("5345MHz")
+		left.Alignment = fyne.TextAlignLeading
+		left.TextStyle = fyne.TextStyle{Bold: true}
+
+		middle := widget.NewLabel("5495MHz")
+		middle.Alignment = fyne.TextAlignCenter
+		middle.TextStyle = fyne.TextStyle{Bold: true}
+
+		right := widget.NewLabel("5645MHz")
+		right.Alignment = fyne.TextAlignTrailing
+		right.TextStyle = fyne.TextStyle{Bold: true}
+
+		global.Ui.LowbandFrequencyLabels = container.NewGridWithColumns(3,
+			left,
+			middle,
+			right,
+		)
+	}
+	global.Ui.LowbandFrequencyLabels.Hide()
+
 	// Create accordion for configuration items
 	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration",
 		container.NewVBox(
@@ -107,7 +150,10 @@ func main() {
 			),
 			configAccordion,
 		),
-		nil,
+		container.NewVBox(
+			global.Ui.HighbandFrequencyLabels,
+			global.Ui.LowbandFrequencyLabels,
+		),
 		nil,
 		nil,
 		global.Ui.Graph,
