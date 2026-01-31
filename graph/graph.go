@@ -3,18 +3,27 @@ package graph
 import (
 	"image"
 	"image/color"
+
+	"fyne.io/fyne/v2/theme"
 )
 
-// Generates black and white histogram image with one bar per number
-func CreateGraph(numbers []int, width, height int, minValue, maxValue int) image.Image {
-	img := image.NewGray(image.Rect(0, 0, width, height))
+// Generate empty image
+func NewEmptyImage(width, height int, c color.Color) *image.NRGBA {
+	img := image.NewNRGBA(image.Rect(0, 0, width, height))
 
 	// Fill background
 	for y := range height {
 		for x := range width {
-			img.Set(x, y, color.Black)
+			img.Set(x, y, c)
 		}
 	}
+
+	return img
+}
+
+// Generates black and white histogram image with one bar per number
+func CreateGraph(numbers []int, width, height int, minValue, maxValue int) image.Image {
+	img := NewEmptyImage(width, height, color.Black)
 
 	if len(numbers) == 0 || maxValue <= minValue {
 		return img
@@ -43,7 +52,7 @@ func CreateGraph(numbers []int, width, height int, minValue, maxValue int) image
 		// Draw bar
 		for y := y1; y < height; y++ {
 			for x := x1; x < x2 && x < width; x++ {
-				img.Set(x, y, color.White)
+				img.Set(x, y, theme.Color(theme.ColorNamePrimary))
 			}
 		}
 	}

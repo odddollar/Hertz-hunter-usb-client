@@ -17,7 +17,7 @@ var (
 
 // Dimensions for graph image
 const (
-	GraphWidth  = 1000
+	GraphWidth  = 998
 	GraphHeight = 600
 )
 
