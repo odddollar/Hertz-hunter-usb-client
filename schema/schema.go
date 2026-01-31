@@ -3,7 +3,6 @@ package schema
 import (
 	"Hertz-Hunter-USB-Client/usb"
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -36,11 +35,15 @@ func (c *Schema) Stop() {
 }
 
 // Start polling for rssi values from device
-func (c *Schema) StartPollValues(period time.Duration) {
+func (c *Schema) StartPollValues(period time.Duration) <-chan error {
 	ctx, cancel := context.WithCancel(context.Background())
 	c.pollingCancel = cancel
 
+	errCh := make(chan error, 1)
+
 	go func() {
+		defer close(errCh)
+
 		// Start ticker
 		ticker := time.NewTicker(period)
 		defer ticker.Stop()
@@ -50,11 +53,14 @@ func (c *Schema) StartPollValues(period time.Duration) {
 			case <-ticker.C:
 				_, err := c.connection.Communicate(usb.SerialFrame{Event: "get", Location: "values", Payload: map[string]any{}})
 				if err != nil {
-					fmt.Printf("Periodic communication error: %v\n", err)
+					errCh <- err
+					return
 				}
 			case <-ctx.Done():
 				return
 			}
 		}
 	}()
+
+	return errCh
 }

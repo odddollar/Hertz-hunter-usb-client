@@ -44,5 +44,9 @@ func ConnectUSBSerial() {
 	})
 
 	// Start polling for values
-	global.Schema.StartPollValues(pollRate)
+	errCh := global.Schema.StartPollValues(pollRate)
+	if err = <-errCh; err != nil {
+		global.EnableConnectionUI()
+		dialogs.ShowError(err)
+	}
 }
