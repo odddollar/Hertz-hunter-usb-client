@@ -25,22 +25,22 @@ func NewSchema(portName string, baud int) (*Schema, error) {
 }
 
 // Cancels rssi polling and disconnects device
-func (c *Schema) Stop() {
-	if c.pollingCancel != nil {
-		c.pollingCancel()
-		c.pollingCancel = nil
+func (s *Schema) Stop() {
+	if s.pollingCancel != nil {
+		s.pollingCancel()
+		s.pollingCancel = nil
 	}
 
-	if c.connection != nil {
-		c.connection.Disconnect()
-		c.connection = nil
+	if s.connection != nil {
+		s.connection.Disconnect()
+		s.connection = nil
 	}
 }
 
 // Start polling for rssi values from device
-func (c *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan error) {
+func (s *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	c.pollingCancel = cancel
+	s.pollingCancel = cancel
 
 	valuesCh := make(chan []int)
 	errCh := make(chan error, 1)
@@ -57,7 +57,7 @@ func (c *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan err
 			select {
 			case <-ticker.C:
 				// Get values data
-				data, err := c.connection.Communicate(usb.SerialFrame{Event: "get", Location: "values", Payload: map[string]any{}})
+				data, err := s.connection.Communicate(usb.SerialFrame{Event: "get", Location: "values", Payload: map[string]any{}})
 				if err != nil {
 					errCh <- err
 					return
@@ -80,4 +80,14 @@ func (c *Schema) StartPollValues(period time.Duration) (<-chan []int, <-chan err
 	}()
 
 	return valuesCh, errCh
+}
+
+// Get calibrated values
+func (s *Schema) GetCalibratedValues() (int, int, error) {
+	raw, err := s.connection.Communicate(usb.SerialFrame{Event: "get", Location: "calibration", Payload: map[string]any{}})
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return int(raw.Payload["low_rssi"].(float64)), int(raw.Payload["high_rssi"].(float64)), nil
 }

@@ -42,6 +42,19 @@ func ConnectUSBSerial() {
 	// Switch which button is visible
 	fyne.Do(func() { global.SwitchConnectionButtons() })
 
+	// Get calibration values
+	lowCalibration, highCalibration, err := global.Schema.GetCalibratedValues()
+	if err != nil {
+		// Stop and clear schema
+		global.Schema.Stop()
+		global.Schema = nil
+
+		global.EnableConnectionUI()
+		global.SwitchConnectionButtons()
+		dialogs.ShowError(err)
+		return
+	}
+
 	// Start polling for values
 	valuesCh, errCh := global.Schema.StartPollValues(pollRate)
 
@@ -57,7 +70,8 @@ func ConnectUSBSerial() {
 					values,
 					global.GraphWidth,
 					global.GraphHeight,
-					500, 1000,
+					lowCalibration,
+					highCalibration,
 				)
 
 				global.CurrentGraph = img
@@ -74,11 +88,9 @@ func ConnectUSBSerial() {
 				global.Schema = nil
 
 				// Update ui
-				fyne.Do(func() {
-					global.EnableConnectionUI()
-					global.SwitchConnectionButtons()
-					dialogs.ShowError(err)
-				})
+				global.EnableConnectionUI()
+				global.SwitchConnectionButtons()
+				dialogs.ShowError(err)
 
 				return
 			}

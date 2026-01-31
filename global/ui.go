@@ -60,21 +60,29 @@ func EnableConnectionUI() {
 // Switch which connection button is visible
 func SwitchConnectionButtons() {
 	if !Ui.Connect.Hidden && Ui.Disconnect.Hidden {
-		Ui.Connect.Hide()
-		Ui.Disconnect.Show()
+		fyne.Do(func() {
+			Ui.Connect.Hide()
+			Ui.Disconnect.Show()
+		})
 	} else if Ui.Connect.Hidden && !Ui.Disconnect.Hidden {
-		Ui.Connect.Show()
-		Ui.Disconnect.Hide()
+		fyne.Do(func() {
+			Ui.Connect.Show()
+			Ui.Disconnect.Hide()
+		})
 	}
 }
 
 // Switch which band labels are visible
 func SwitchBandLabels(highband bool) {
 	if highband {
-		Ui.HighbandFrequencyLabels.Show()
-		Ui.LowbandFrequencyLabels.Hide()
+		fyne.Do(func() {
+			Ui.HighbandFrequencyLabels.Show()
+			Ui.LowbandFrequencyLabels.Hide()
+		})
 	} else {
-		Ui.HighbandFrequencyLabels.Hide()
-		Ui.LowbandFrequencyLabels.Show()
+		fyne.Do(func() {
+			Ui.HighbandFrequencyLabels.Hide()
+			Ui.LowbandFrequencyLabels.Show()
+		})
 	}
 }
