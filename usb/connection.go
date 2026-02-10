@@ -70,10 +70,10 @@ func (c *Connection) Disconnect() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.port != nil {
-		c.port.Close()
-		c.port = nil
-	}
+	// Purge and close connection stream
+	c.port.ResetInputBuffer()
+	c.port.ResetOutputBuffer()
+	c.port.Close()
 }
 
 // Send message frame over serial and return response

@@ -40,7 +40,7 @@ func ConnectUSBSerial() {
 	}
 
 	// Switch which button is visible
-	fyne.Do(func() { global.SwitchConnectionButtons() })
+	global.SwitchConnectionButtons()
 
 	// Get calibration values
 	lowCalibration, highCalibration, err := global.Schema.GetCalibratedValues()
