@@ -1,0 +1,250 @@
+package ui
+
+import (
+	"Hertz-Hunter-USB-Client/schema"
+	"Hertz-Hunter-USB-Client/utils"
+	"Hertz-Hunter-USB-Client/widgets"
+	"fmt"
+	"image"
+	"image/color"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
+)
+
+type Ui struct {
+	// Main app elements
+	a fyne.App
+	w fyne.Window
+
+	// Ui components
+	titleLabel                 *canvas.Text
+	aboutButton                *widget.Button
+	portsLabel                 *widget.Label
+	portsSelect                *widget.Select
+	portsRefreshButton         *widget.Button
+	baudrateLabel              *widget.Label
+	baudrateSelect             *widget.Select
+	graphRefreshIntervalLabel  *widget.Label
+	graphRefreshIntervalSelect *widget.Select
+	connectButton              *widget.Button
+	disconnectButton           *widget.Button
+	graphImage                 *canvas.Image
+	highbandFrequencyLabels    *fyne.Container
+	lowbandFrequencyLabels     *fyne.Container
+
+	// Store current graph image
+	currentGraphImage image.Image
+
+	// Global schema object store
+	schema *schema.Schema
+}
+
+// Create new ui layout
+func (u *Ui) NewUI() {
+	// Create window
+	u.a = app.New()
+	u.w = u.a.NewWindow("Hertz Hunter USB Client")
+
+	// Create title widget
+	u.titleLabel = canvas.NewText("Hertz Hunter USB Client", color.Black)
+	u.titleLabel.Alignment = fyne.TextAlignCenter
+	u.titleLabel.TextStyle.Bold = true
+	u.titleLabel.TextSize = 20
+
+	// Create about button
+	u.aboutButton = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showAbout)
+
+	// Create ports label
+	u.portsLabel = widget.NewLabel("Serial Port:")
+
+	// Create port selection dropdown with serial ports
+	u.portsSelect = widget.NewSelect([]string{}, func(s string) {})
+
+	// Create refresh ports button
+	u.portsRefreshButton = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), u.refreshPortsDisplay)
+
+	// Create baudrate label and entry
+	u.baudrateLabel = widget.NewLabel("Baudrate:")
+	u.baudrateSelect = widget.NewSelect(utils.IntsToStrings(BAUDRATES), func(s string) {})
+	u.baudrateSelect.SetSelected(fmt.Sprint(DEFAULT_BAUDRATE))
+
+	// Create refresh graph label and dropdown
+	u.graphRefreshIntervalLabel = widget.NewLabel("Graph Refresh Interval:")
+	u.graphRefreshIntervalSelect = widget.NewSelect(utils.DurationsToStrings(REFRESH_INTERVALS), func(s string) {})
+	u.graphRefreshIntervalSelect.SetSelected(fmt.Sprintf("%.2gs", DEFAULT_REFRESH_INTERVAL.Seconds()))
+
+	// Create connect button
+	u.connectButton = widget.NewButton("Connect", func() { go u.connectUSBSerial() })
+	u.connectButton.Importance = widget.HighImportance
+
+	// Create disconnect button
+	u.disconnectButton = widget.NewButton("Disconnect", u.disconnectUSBSerial)
+	u.disconnectButton.Hide()
+
+	// Create graph display area
+	u.currentGraphImage = newEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
+	u.graphImage = canvas.NewImageFromImage(u.currentGraphImage)
+	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
+	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
+
+	// Create highband labels
+	{
+		left := widget.NewLabel("5645MHz")
+		left.Alignment = fyne.TextAlignLeading
+		left.TextStyle = fyne.TextStyle{Bold: true}
+
+		middle := widget.NewLabel("5795MHz")
+		middle.Alignment = fyne.TextAlignCenter
+		middle.TextStyle = fyne.TextStyle{Bold: true}
+
+		right := widget.NewLabel("5945MHz")
+		right.Alignment = fyne.TextAlignTrailing
+		right.TextStyle = fyne.TextStyle{Bold: true}
+
+		u.highbandFrequencyLabels = container.NewGridWithColumns(3,
+			left,
+			middle,
+			right,
+		)
+	}
+
+	// Create lowband labels
+	{
+		left := widget.NewLabel("5345MHz")
+		left.Alignment = fyne.TextAlignLeading
+		left.TextStyle = fyne.TextStyle{Bold: true}
+
+		middle := widget.NewLabel("5495MHz")
+		middle.Alignment = fyne.TextAlignCenter
+		middle.TextStyle = fyne.TextStyle{Bold: true}
+
+		right := widget.NewLabel("5645MHz")
+		right.Alignment = fyne.TextAlignTrailing
+		right.TextStyle = fyne.TextStyle{Bold: true}
+
+		u.lowbandFrequencyLabels = container.NewGridWithColumns(3,
+			left,
+			middle,
+			right,
+		)
+	}
+	u.lowbandFrequencyLabels.Hide()
+
+	// Create accordion for configuration items
+	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration",
+		container.NewVBox(
+			container.NewBorder(
+				nil,
+				nil,
+				container.NewVBox(
+					u.portsLabel,
+					u.baudrateLabel,
+					u.graphRefreshIntervalLabel,
+				),
+				nil,
+				container.NewVBox(
+					container.NewBorder(
+						nil,
+						nil,
+						nil,
+						u.portsRefreshButton,
+						u.portsSelect,
+					),
+					u.baudrateSelect,
+					u.graphRefreshIntervalSelect,
+				),
+			),
+			u.connectButton,
+			u.disconnectButton,
+		),
+	))
+	configAccordion.Open(0)
+
+	// Create window layout and set content
+	u.w.SetContent(container.NewBorder(
+		container.NewVBox(
+			container.NewBorder(
+				nil,
+				nil,
+				widgets.NewSpacer(widget.NewButtonWithIcon("", theme.InfoIcon(), func() {}).MinSize()), // Keeps title centred
+				u.aboutButton,
+				u.titleLabel,
+			),
+			configAccordion,
+		),
+		container.NewVBox(
+			u.highbandFrequencyLabels,
+			u.lowbandFrequencyLabels,
+		),
+		nil,
+		nil,
+		u.graphImage,
+	))
+
+	// Initial refresh of available ports
+	u.refreshPortsDisplay()
+}
+
+// Show and run app
+func (u *Ui) Run() {
+	u.w.Resize(fyne.NewSize(800, 600))
+	u.w.Show()
+	u.a.Run()
+}
+
+// Disable ui elements related to connection
+func (u *Ui) disableConnectionUI() {
+	fyne.Do(func() {
+		u.portsSelect.Disable()
+		u.portsRefreshButton.Disable()
+		u.baudrateSelect.Disable()
+		u.graphRefreshIntervalSelect.Disable()
+		u.connectButton.Disable()
+	})
+}
+
+// Enable ui elements related to connection
+func (u *Ui) enableConnectionUI() {
+	fyne.Do(func() {
+		u.portsSelect.Enable()
+		u.portsRefreshButton.Enable()
+		u.baudrateSelect.Enable()
+		u.graphRefreshIntervalSelect.Enable()
+		u.connectButton.Enable()
+	})
+}
+
+// Switch which connection button is visible
+func (u *Ui) switchConnectionButtons() {
+	if !u.connectButton.Hidden && u.disconnectButton.Hidden {
+		fyne.Do(func() {
+			u.connectButton.Hide()
+			u.disconnectButton.Show()
+		})
+	} else if u.connectButton.Hidden && !u.disconnectButton.Hidden {
+		fyne.Do(func() {
+			u.connectButton.Show()
+			u.disconnectButton.Hide()
+		})
+	}
+}
+
+// Switch which band labels are visible
+func (u *Ui) switchBandLabels(lowband bool) {
+	if lowband {
+		fyne.Do(func() {
+			u.highbandFrequencyLabels.Hide()
+			u.lowbandFrequencyLabels.Show()
+		})
+	} else {
+		fyne.Do(func() {
+			u.highbandFrequencyLabels.Show()
+			u.lowbandFrequencyLabels.Hide()
+		})
+	}
+}
