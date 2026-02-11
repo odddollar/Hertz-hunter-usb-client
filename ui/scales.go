@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"Hertz-Hunter-USB-Client/widgets"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -32,6 +34,11 @@ func newRssiScale(alignment fyne.TextAlign) *fyne.Container {
 
 // Create frequency scale with given text
 func newFrequencyScale(low, mid, high string) *fyne.Container {
+	// Alignment spacer
+	t := canvas.NewText("100%", theme.Color(theme.ColorNameForeground))
+	t.TextStyle.Bold = true
+	spacer := widgets.NewSpacer(t.MinSize())
+
 	left := canvas.NewText(low, theme.Color(theme.ColorNameForeground))
 	left.Alignment = fyne.TextAlignLeading
 	left.TextStyle.Bold = true
@@ -45,8 +52,8 @@ func newFrequencyScale(low, mid, high string) *fyne.Container {
 	right.TextStyle.Bold = true
 
 	return container.NewGridWithColumns(3,
-		left,
+		container.NewBorder(nil, nil, spacer, nil, left),
 		middle,
-		right,
+		container.NewBorder(nil, nil, nil, spacer, right),
 	)
 }
