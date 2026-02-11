@@ -2,6 +2,7 @@ package ui
 
 import (
 	"Hertz-Hunter-USB-Client/schema"
+	"Hertz-Hunter-USB-Client/utils"
 	"errors"
 
 	"fyne.io/fyne/v2"
@@ -62,7 +63,7 @@ func (u *Ui) connectUSBSerial() {
 					return
 				}
 
-				img := createGraph(
+				img := utils.CreateGraph(
 					values.Values,
 					GRAPH_WIDTH,
 					GRAPH_HEIGHT,

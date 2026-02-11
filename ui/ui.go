@@ -89,7 +89,7 @@ func (u *Ui) NewUI() {
 	u.disconnectButton.Hide()
 
 	// Create graph display area
-	u.currentGraphImage = newEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
+	u.currentGraphImage = utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
 	u.graphImage = canvas.NewImageFromImage(u.currentGraphImage)
 	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
 	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect

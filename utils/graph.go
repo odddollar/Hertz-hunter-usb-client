@@ -1,4 +1,4 @@
-package ui
+package utils
 
 import (
 	"image"
@@ -8,7 +8,7 @@ import (
 )
 
 // Generate empty image
-func newEmptyImage(width, height int, c color.Color) *image.NRGBA {
+func NewEmptyImage(width, height int, c color.Color) *image.NRGBA {
 	img := image.NewNRGBA(image.Rect(0, 0, width, height))
 
 	// Fill background
@@ -22,8 +22,8 @@ func newEmptyImage(width, height int, c color.Color) *image.NRGBA {
 }
 
 // Generates histogram image with one bar per number
-func createGraph(numbers []int, width, height int, minValue, maxValue int) image.Image {
-	img := newEmptyImage(width, height, color.Black)
+func CreateGraph(numbers []int, width, height int, minValue, maxValue int) image.Image {
+	img := NewEmptyImage(width, height, color.Black)
 
 	if len(numbers) == 0 || maxValue <= minValue {
 		return img
