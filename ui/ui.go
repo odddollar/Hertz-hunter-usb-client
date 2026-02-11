@@ -34,6 +34,8 @@ type Ui struct {
 	connectButton              *widget.Button
 	disconnectButton           *widget.Button
 	graphImage                 *canvas.Image
+	leftRssiLabels             *fyne.Container
+	rightRssiLabels            *fyne.Container
 	highbandFrequencyLabels    *fyne.Container
 	lowbandFrequencyLabels     *fyne.Container
 
@@ -92,19 +94,23 @@ func (u *Ui) NewUI() {
 	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
 	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
 
+	// Create rssi labels
+	u.leftRssiLabels = newRssiScale(fyne.TextAlignTrailing)
+	u.rightRssiLabels = newRssiScale(fyne.TextAlignLeading)
+
 	// Create highband labels
 	{
-		left := widget.NewLabel("5645MHz")
+		left := canvas.NewText("5645MHz", theme.Color(theme.ColorNameForeground))
 		left.Alignment = fyne.TextAlignLeading
-		left.TextStyle = fyne.TextStyle{Bold: true}
+		left.TextStyle.Bold = true
 
-		middle := widget.NewLabel("5795MHz")
+		middle := canvas.NewText("5795MHz", theme.Color(theme.ColorNameForeground))
 		middle.Alignment = fyne.TextAlignCenter
-		middle.TextStyle = fyne.TextStyle{Bold: true}
+		middle.TextStyle.Bold = true
 
-		right := widget.NewLabel("5945MHz")
+		right := canvas.NewText("5945MHz", theme.Color(theme.ColorNameForeground))
 		right.Alignment = fyne.TextAlignTrailing
-		right.TextStyle = fyne.TextStyle{Bold: true}
+		right.TextStyle.Bold = true
 
 		u.highbandFrequencyLabels = container.NewGridWithColumns(3,
 			left,
@@ -115,17 +121,17 @@ func (u *Ui) NewUI() {
 
 	// Create lowband labels
 	{
-		left := widget.NewLabel("5345MHz")
+		left := canvas.NewText("5345MHz", theme.Color(theme.ColorNameForeground))
 		left.Alignment = fyne.TextAlignLeading
-		left.TextStyle = fyne.TextStyle{Bold: true}
+		left.TextStyle.Bold = true
 
-		middle := widget.NewLabel("5495MHz")
+		middle := canvas.NewText("5495MHz", theme.Color(theme.ColorNameForeground))
 		middle.Alignment = fyne.TextAlignCenter
-		middle.TextStyle = fyne.TextStyle{Bold: true}
+		middle.TextStyle.Bold = true
 
-		right := widget.NewLabel("5645MHz")
+		right := canvas.NewText("5645MHz", theme.Color(theme.ColorNameForeground))
 		right.Alignment = fyne.TextAlignTrailing
-		right.TextStyle = fyne.TextStyle{Bold: true}
+		right.TextStyle.Bold = true
 
 		u.lowbandFrequencyLabels = container.NewGridWithColumns(3,
 			left,
@@ -181,8 +187,8 @@ func (u *Ui) NewUI() {
 			u.highbandFrequencyLabels,
 			u.lowbandFrequencyLabels,
 		),
-		nil,
-		nil,
+		u.leftRssiLabels,
+		u.rightRssiLabels,
 		u.graphImage,
 	))
 

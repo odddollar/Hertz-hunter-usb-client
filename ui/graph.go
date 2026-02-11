@@ -21,7 +21,7 @@ func newEmptyImage(width, height int, c color.Color) *image.NRGBA {
 	return img
 }
 
-// Generates black and white histogram image with one bar per number
+// Generates histogram image with one bar per number
 func createGraph(numbers []int, width, height int, minValue, maxValue int) image.Image {
 	img := newEmptyImage(width, height, color.Black)
 
