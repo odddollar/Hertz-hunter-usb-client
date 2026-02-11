@@ -24,12 +24,9 @@ type Ui struct {
 	// Ui components
 	titleLabel                 *canvas.Text
 	aboutButton                *widget.Button
-	portsLabel                 *widget.Label
 	portsSelect                *widget.Select
 	portsRefreshButton         *widget.Button
-	baudrateLabel              *widget.Label
 	baudrateSelect             *widget.Select
-	graphRefreshIntervalLabel  *widget.Label
 	graphRefreshIntervalSelect *widget.Select
 	connectButton              *widget.Button
 	disconnectButton           *widget.Button
@@ -61,22 +58,17 @@ func (u *Ui) NewUI() {
 	// Create about button
 	u.aboutButton = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showAbout)
 
-	// Create ports label
-	u.portsLabel = widget.NewLabel("Serial Port:")
-
 	// Create port selection dropdown with serial ports
 	u.portsSelect = widget.NewSelect([]string{}, func(s string) {})
 
 	// Create refresh ports button
 	u.portsRefreshButton = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), u.refreshPortsDisplay)
 
-	// Create baudrate label and entry
-	u.baudrateLabel = widget.NewLabel("Baudrate:")
+	// Create baudrate entry
 	u.baudrateSelect = widget.NewSelect(utils.IntsToStrings(BAUDRATES), func(s string) {})
 	u.baudrateSelect.SetSelected(fmt.Sprint(DEFAULT_BAUDRATE))
 
-	// Create refresh graph label and dropdown
-	u.graphRefreshIntervalLabel = widget.NewLabel("Graph Refresh Interval:")
+	// Create refresh graph dropdown
 	u.graphRefreshIntervalSelect = widget.NewSelect(utils.DurationsToStrings(REFRESH_INTERVALS), func(s string) {})
 	u.graphRefreshIntervalSelect.SetSelected(fmt.Sprintf("%.2gs", DEFAULT_REFRESH_INTERVAL.Seconds()))
 
@@ -105,34 +97,35 @@ func (u *Ui) NewUI() {
 	u.lowbandFrequencyLabels = newFrequencyScale("5345MHz", "5495MHz", "5645MHz")
 	u.lowbandFrequencyLabels.Hide()
 
-	// Create accordion for configuration items
-	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration",
-		container.NewVBox(
-			container.NewBorder(
+	// Create container for connection items
+	connectionContainer := container.NewVBox(
+		widget.NewForm(
+			widget.NewFormItem("Serial Port", container.NewBorder(
 				nil,
 				nil,
-				container.NewVBox(
-					u.portsLabel,
-					u.baudrateLabel,
-					u.graphRefreshIntervalLabel,
-				),
 				nil,
-				container.NewVBox(
-					container.NewBorder(
-						nil,
-						nil,
-						nil,
-						u.portsRefreshButton,
-						u.portsSelect,
-					),
-					u.baudrateSelect,
-					u.graphRefreshIntervalSelect,
-				),
-			),
-			u.connectButton,
-			u.disconnectButton,
+				u.portsRefreshButton,
+				u.portsSelect,
+			)),
+			widget.NewFormItem("Baudrate", u.baudrateSelect),
+			widget.NewFormItem("Graph Refresh Interval", u.graphRefreshIntervalSelect),
 		),
-	))
+		u.connectButton,
+		u.disconnectButton,
+	)
+
+	// Create container for calibration items
+	calibrationContainer := container.NewVBox()
+
+	// Intermediate accordion so connection can be open by default
+	innerAccordion := widget.NewAccordion(
+		widget.NewAccordionItem("Connection", connectionContainer),
+		widget.NewAccordionItem("Calibration", calibrationContainer),
+	)
+	innerAccordion.Open(0)
+
+	// Create accordion for configuration items
+	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration", innerAccordion))
 	configAccordion.Open(0)
 
 	// Create window layout and set content
