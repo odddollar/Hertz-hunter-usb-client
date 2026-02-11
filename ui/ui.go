@@ -99,46 +99,10 @@ func (u *Ui) NewUI() {
 	u.rightRssiLabels = newRssiScale(fyne.TextAlignLeading)
 
 	// Create highband labels
-	{
-		left := canvas.NewText("5645MHz", theme.Color(theme.ColorNameForeground))
-		left.Alignment = fyne.TextAlignLeading
-		left.TextStyle.Bold = true
-
-		middle := canvas.NewText("5795MHz", theme.Color(theme.ColorNameForeground))
-		middle.Alignment = fyne.TextAlignCenter
-		middle.TextStyle.Bold = true
-
-		right := canvas.NewText("5945MHz", theme.Color(theme.ColorNameForeground))
-		right.Alignment = fyne.TextAlignTrailing
-		right.TextStyle.Bold = true
-
-		u.highbandFrequencyLabels = container.NewGridWithColumns(3,
-			left,
-			middle,
-			right,
-		)
-	}
+	u.highbandFrequencyLabels = newFrequencyScale("5645MHz", "5795MHz", "5945MHz")
 
 	// Create lowband labels
-	{
-		left := canvas.NewText("5345MHz", theme.Color(theme.ColorNameForeground))
-		left.Alignment = fyne.TextAlignLeading
-		left.TextStyle.Bold = true
-
-		middle := canvas.NewText("5495MHz", theme.Color(theme.ColorNameForeground))
-		middle.Alignment = fyne.TextAlignCenter
-		middle.TextStyle.Bold = true
-
-		right := canvas.NewText("5645MHz", theme.Color(theme.ColorNameForeground))
-		right.Alignment = fyne.TextAlignTrailing
-		right.TextStyle.Bold = true
-
-		u.lowbandFrequencyLabels = container.NewGridWithColumns(3,
-			left,
-			middle,
-			right,
-		)
-	}
+	u.lowbandFrequencyLabels = newFrequencyScale("5345MHz", "5495MHz", "5645MHz")
 	u.lowbandFrequencyLabels.Hide()
 
 	// Create accordion for configuration items
