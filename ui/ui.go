@@ -21,20 +21,27 @@ type Ui struct {
 	a fyne.App
 	w fyne.Window
 
-	// Ui components
-	titleLabel                 *canvas.Text
-	aboutButton                *widget.Button
+	// Main ui components
+	titleLabel              *canvas.Text
+	aboutButton             *widget.Button
+	graphImage              *canvas.Image
+	leftRssiLabels          *fyne.Container
+	rightRssiLabels         *fyne.Container
+	highbandFrequencyLabels *fyne.Container
+	lowbandFrequencyLabels  *fyne.Container
+
+	// Connection ui components
 	portsSelect                *widget.Select
 	portsRefreshButton         *widget.Button
 	baudrateSelect             *widget.Select
 	graphRefreshIntervalSelect *widget.Select
 	connectButton              *widget.Button
 	disconnectButton           *widget.Button
-	graphImage                 *canvas.Image
-	leftRssiLabels             *fyne.Container
-	rightRssiLabels            *fyne.Container
-	highbandFrequencyLabels    *fyne.Container
-	lowbandFrequencyLabels     *fyne.Container
+
+	// Calibration ui components
+	highRssiCalibrationEntry *widget.Entry
+	lowRssiCalibrationEntry  *widget.Entry
+	calibrationSetButton     *widget.Button
 
 	// Store current graph image
 	currentGraphImage image.Image
@@ -58,6 +65,23 @@ func (u *Ui) NewUI() {
 	// Create about button
 	u.aboutButton = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showAbout)
 
+	// Create graph display area
+	u.currentGraphImage = utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
+	u.graphImage = canvas.NewImageFromImage(u.currentGraphImage)
+	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
+	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
+
+	// Create rssi labels
+	u.leftRssiLabels = newRssiScale(fyne.TextAlignTrailing)
+	u.rightRssiLabels = newRssiScale(fyne.TextAlignLeading)
+
+	// Create highband labels
+	u.highbandFrequencyLabels = newFrequencyScale("5645MHz", "5795MHz", "5945MHz")
+
+	// Create lowband labels
+	u.lowbandFrequencyLabels = newFrequencyScale("5345MHz", "5495MHz", "5645MHz")
+	u.lowbandFrequencyLabels.Hide()
+
 	// Create port selection dropdown with serial ports
 	u.portsSelect = widget.NewSelect([]string{}, func(s string) {})
 
@@ -80,23 +104,6 @@ func (u *Ui) NewUI() {
 	u.disconnectButton = widget.NewButton("Disconnect", u.disconnectUSBSerial)
 	u.disconnectButton.Hide()
 
-	// Create graph display area
-	u.currentGraphImage = utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
-	u.graphImage = canvas.NewImageFromImage(u.currentGraphImage)
-	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
-	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
-
-	// Create rssi labels
-	u.leftRssiLabels = newRssiScale(fyne.TextAlignTrailing)
-	u.rightRssiLabels = newRssiScale(fyne.TextAlignLeading)
-
-	// Create highband labels
-	u.highbandFrequencyLabels = newFrequencyScale("5645MHz", "5795MHz", "5945MHz")
-
-	// Create lowband labels
-	u.lowbandFrequencyLabels = newFrequencyScale("5345MHz", "5495MHz", "5645MHz")
-	u.lowbandFrequencyLabels.Hide()
-
 	// Create container for connection items
 	connectionContainer := container.NewVBox(
 		widget.NewForm(
@@ -114,8 +121,22 @@ func (u *Ui) NewUI() {
 		u.disconnectButton,
 	)
 
+	// Create entries for calibration rssi
+	u.highRssiCalibrationEntry = widget.NewEntry()
+	u.lowRssiCalibrationEntry = widget.NewEntry()
+
+	// Create set button for calibration
+	u.calibrationSetButton = widget.NewButton("Set", func() {})
+	u.calibrationSetButton.Importance = widget.HighImportance
+
 	// Create container for calibration items
-	calibrationContainer := container.NewVBox()
+	calibrationContainer := container.NewVBox(
+		widget.NewForm(
+			widget.NewFormItem("High Value", u.highRssiCalibrationEntry),
+			widget.NewFormItem("Low Value", u.lowRssiCalibrationEntry),
+		),
+		u.calibrationSetButton,
+	)
 
 	// Intermediate accordion so connection can be open by default
 	innerAccordion := widget.NewAccordion(
