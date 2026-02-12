@@ -46,13 +46,7 @@ func (u *Ui) connectUSBSerial() {
 	// Get calibration values
 	lowCalibration, highCalibration, err := u.schema.GetCalibratedValues()
 	if err != nil {
-		// Stop and clear schema
-		u.schema.Stop()
-
-		u.enableConnectionUi()
-		u.switchConnectionButtons()
-		u.disableSettingsUi()
-		u.showError(err)
+		u.connectionError(err)
 		return
 	}
 
@@ -91,15 +85,7 @@ func (u *Ui) connectUSBSerial() {
 					return
 				}
 
-				// Stop and clear schema
-				u.schema.Stop()
-
-				// Update ui
-				u.enableConnectionUi()
-				u.switchConnectionButtons()
-				u.disableSettingsUi()
-				u.showError(err)
-
+				u.connectionError(err)
 				return
 			}
 		}

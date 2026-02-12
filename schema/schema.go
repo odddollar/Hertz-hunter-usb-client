@@ -37,10 +37,7 @@ func (s *Schema) Stop() {
 		s.pollingCancel = nil
 	}
 
-	if s.connection != nil {
-		s.connection.Disconnect()
-		s.connection = nil
-	}
+	s.connection.Disconnect()
 }
 
 // Start polling for rssi values from device
