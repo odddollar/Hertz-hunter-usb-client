@@ -169,6 +169,9 @@ func (u *Ui) NewUI() {
 
 	// Initial refresh of available ports
 	u.refreshPortsDisplay()
+
+	// Disable settings elements as not connected
+	u.disableSettingsUi()
 }
 
 // Show and run app
@@ -179,7 +182,7 @@ func (u *Ui) Run() {
 }
 
 // Disable ui elements related to connection
-func (u *Ui) disableConnectionUI() {
+func (u *Ui) disableConnectionUi() {
 	fyne.Do(func() {
 		u.portsSelect.Disable()
 		u.portsRefreshButton.Disable()
@@ -190,13 +193,31 @@ func (u *Ui) disableConnectionUI() {
 }
 
 // Enable ui elements related to connection
-func (u *Ui) enableConnectionUI() {
+func (u *Ui) enableConnectionUi() {
 	fyne.Do(func() {
 		u.portsSelect.Enable()
 		u.portsRefreshButton.Enable()
 		u.baudrateSelect.Enable()
 		u.graphRefreshIntervalSelect.Enable()
 		u.connectButton.Enable()
+	})
+}
+
+// Disable ui elements related to settings
+func (u *Ui) disableSettingsUi() {
+	fyne.Do(func() {
+		u.highRssiCalibrationEntry.Disable()
+		u.lowRssiCalibrationEntry.Disable()
+		u.calibrationSetButton.Disable()
+	})
+}
+
+// Enable ui elements related to settings
+func (u *Ui) enableSettingsUi() {
+	fyne.Do(func() {
+		u.highRssiCalibrationEntry.Enable()
+		u.lowRssiCalibrationEntry.Enable()
+		u.calibrationSetButton.Enable()
 	})
 }
 

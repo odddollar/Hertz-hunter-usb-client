@@ -17,7 +17,7 @@ func (u *Ui) connectUSBSerial() {
 	}
 
 	// Disable ui elements whilst attempting connection
-	u.disableConnectionUI()
+	u.disableConnectionUi()
 
 	// Get port
 	portName := u.portsSelect.Selected
@@ -32,13 +32,16 @@ func (u *Ui) connectUSBSerial() {
 	var err error
 	u.schema, err = schema.NewSchema(portName, baudRate)
 	if err != nil {
-		u.enableConnectionUI()
+		u.enableConnectionUi()
 		u.showError(err)
 		return
 	}
 
-	// Switch which button is visible
+	// Switch which connection button is visible
 	u.switchConnectionButtons()
+
+	// Enable settings ui
+	u.enableSettingsUi()
 
 	// Get calibration values
 	lowCalibration, highCalibration, err := u.schema.GetCalibratedValues()
@@ -46,8 +49,9 @@ func (u *Ui) connectUSBSerial() {
 		// Stop and clear schema
 		u.schema.Stop()
 
-		u.enableConnectionUI()
+		u.enableConnectionUi()
 		u.switchConnectionButtons()
+		u.disableSettingsUi()
 		u.showError(err)
 		return
 	}
@@ -88,8 +92,9 @@ func (u *Ui) connectUSBSerial() {
 				u.schema.Stop()
 
 				// Update ui
-				u.enableConnectionUI()
+				u.enableConnectionUi()
 				u.switchConnectionButtons()
+				u.disableSettingsUi()
 				u.showError(err)
 
 				return
