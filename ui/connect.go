@@ -56,6 +56,9 @@ func (u *Ui) connectUSBSerial() {
 		return
 	}
 
+	// Update entries with calibration values
+	u.updateCalibrationEntries(highCalibration, lowCalibration)
+
 	// Start polling for values
 	valuesCh, errCh := u.schema.StartPollValues(pollRate)
 

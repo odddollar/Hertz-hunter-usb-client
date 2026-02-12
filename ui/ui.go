@@ -250,3 +250,12 @@ func (u *Ui) switchBandLabels(lowband bool) {
 		})
 	}
 }
+
+// Update values in calibration entries
+func (u *Ui) updateCalibrationEntries(high, low int) {
+	fyne.Do(func() {
+		// Fill calibration entries with values
+		u.highRssiCalibrationEntry.SetText(fmt.Sprint(high))
+		u.lowRssiCalibrationEntry.SetText(fmt.Sprint(low))
+	})
+}
