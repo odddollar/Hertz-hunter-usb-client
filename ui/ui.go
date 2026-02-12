@@ -138,15 +138,12 @@ func (u *Ui) NewUI() {
 		u.calibrationSetButton,
 	)
 
-	// Intermediate accordion so connection can be open by default
-	innerAccordion := widget.NewAccordion(
+	// Create accordion for configuration items
+	configAccordion := widget.NewAccordion(
 		widget.NewAccordionItem("Connection", connectionContainer),
 		widget.NewAccordionItem("Calibration", calibrationContainer),
 	)
-	innerAccordion.Open(0)
-
-	// Create accordion for configuration items
-	configAccordion := widget.NewAccordion(widget.NewAccordionItem("Configuration", innerAccordion))
+	configAccordion.MultiOpen = true
 	configAccordion.Open(0)
 
 	// Create window layout and set content
