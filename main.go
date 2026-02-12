@@ -1,6 +1,8 @@
 package main
 
-import "Hertz-Hunter-USB-Client/ui"
+import (
+	"Hertz-Hunter-USB-Client/ui"
+)
 
 func main() {
 	// Create and run ui

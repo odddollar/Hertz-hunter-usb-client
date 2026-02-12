@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
@@ -123,10 +124,18 @@ func (u *Ui) NewUI() {
 
 	// Create entries for calibration rssi
 	u.highRssiCalibrationEntry = widget.NewEntry()
+	u.highRssiCalibrationEntry.Validator = validation.NewRegexp(
+		`^(?:[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5])$`,
+		"Must be integer between 0 and 4095 inclusive",
+	)
 	u.lowRssiCalibrationEntry = widget.NewEntry()
+	u.lowRssiCalibrationEntry.Validator = validation.NewRegexp(
+		`^(?:[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5])$`,
+		"Must be integer between 0 and 4095 inclusive",
+	)
 
 	// Create set button for calibration
-	u.calibrationSetButton = widget.NewButton("Set", func() {})
+	u.calibrationSetButton = widget.NewButton("Set", u.setCalibrationValues)
 	u.calibrationSetButton.Importance = widget.HighImportance
 
 	// Create container for calibration items
