@@ -14,5 +14,12 @@ func (u *Ui) setCalibrationValues() {
 	err := u.schema.SetCalibratedValues(low, high)
 	if err != nil {
 		u.showError(err)
+		return
 	}
+
+	// Update store of calibration values for graph scaling only after values are known-good
+	u.highRssiCalibration = high
+	u.lowRssiCalibration = low
+
+	u.showSuccess("Calibration set")
 }

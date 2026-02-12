@@ -44,14 +44,14 @@ func (u *Ui) connectUSBSerial() {
 	u.enableSettingsUi()
 
 	// Get calibration values
-	lowCalibration, highCalibration, err := u.schema.GetCalibratedValues()
+	u.lowRssiCalibration, u.highRssiCalibration, err = u.schema.GetCalibratedValues()
 	if err != nil {
 		u.connectionError(err)
 		return
 	}
 
 	// Update entries with calibration values
-	u.updateCalibrationEntries(highCalibration, lowCalibration)
+	u.updateCalibrationEntries()
 
 	// Start polling for values
 	valuesCh, errCh := u.schema.StartPollValues(pollRate)
@@ -68,8 +68,8 @@ func (u *Ui) connectUSBSerial() {
 					values.Values,
 					GRAPH_WIDTH,
 					GRAPH_HEIGHT,
-					lowCalibration,
-					highCalibration,
+					u.lowRssiCalibration,
+					u.highRssiCalibration,
 				)
 
 				u.currentGraphImage = img

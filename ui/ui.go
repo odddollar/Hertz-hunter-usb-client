@@ -47,6 +47,10 @@ type Ui struct {
 	// Store current graph image
 	currentGraphImage image.Image
 
+	// Store current calibration values
+	highRssiCalibration int
+	lowRssiCalibration  int
+
 	// Global schema object store
 	schema *schema.Schema
 }
@@ -261,10 +265,10 @@ func (u *Ui) switchBandLabels(lowband bool) {
 }
 
 // Update values in calibration entries
-func (u *Ui) updateCalibrationEntries(high, low int) {
+func (u *Ui) updateCalibrationEntries() {
 	fyne.Do(func() {
 		// Fill calibration entries with values
-		u.highRssiCalibrationEntry.SetText(fmt.Sprint(high))
-		u.lowRssiCalibrationEntry.SetText(fmt.Sprint(low))
+		u.highRssiCalibrationEntry.SetText(fmt.Sprint(u.highRssiCalibration))
+		u.lowRssiCalibrationEntry.SetText(fmt.Sprint(u.lowRssiCalibration))
 	})
 }
