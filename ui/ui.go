@@ -106,7 +106,7 @@ func (u *Ui) NewUI() {
 	u.connectButton.Importance = widget.HighImportance
 
 	// Create disconnect button
-	u.disconnectButton = widget.NewButton("Disconnect", u.disconnectUSBSerial)
+	u.disconnectButton = widget.NewButton("Disconnect", func() { go u.disconnectUSBSerial() })
 	u.disconnectButton.Hide()
 
 	// Create container for connection items
@@ -139,7 +139,7 @@ func (u *Ui) NewUI() {
 	)
 
 	// Create set button for calibration
-	u.calibrationSetButton = widget.NewButton("Set", u.setCalibrationValues)
+	u.calibrationSetButton = widget.NewButton("Set", func() { go u.setCalibrationValues() })
 	u.calibrationSetButton.Importance = widget.HighImportance
 
 	// Create container for calibration items
@@ -235,6 +235,7 @@ func (u *Ui) enableSettingsUi() {
 }
 
 // Switch which connection button is visible
+// TODO: Split into separate show connect and show disconnect button functions
 func (u *Ui) switchConnectionButtons() {
 	if !u.connectButton.Hidden && u.disconnectButton.Hidden {
 		fyne.Do(func() {
