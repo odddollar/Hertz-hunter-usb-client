@@ -3,11 +3,15 @@ package usb
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
 	"go.bug.st/serial"
 )
+
+var longestWait time.Duration
+var recentWait time.Duration
 
 // Format of serial frame
 type SerialFrame struct {
@@ -76,18 +80,32 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	// Send message
-	if err := c.send(msg); err != nil {
-		return SerialFrame{}, err
+	var lastErr error
+	maxAttempts := 2
+
+	for i := range maxAttempts {
+		// Clear read buffer before attempts
+		c.port.ResetInputBuffer()
+
+		// Send message
+		if err := c.send(msg); err != nil {
+			lastErr = err
+			fmt.Printf("Retrying send: %d\n", i)
+			continue
+		}
+
+		// Read response
+		rec, err := c.receive()
+		if err != nil {
+			lastErr = err
+			fmt.Printf("Retrying receive: %d, %s, %s\n", i, err, recentWait)
+			continue
+		}
+
+		return rec, nil
 	}
 
-	// Read response
-	rec, err := c.receive()
-	if err != nil {
-		return SerialFrame{}, err
-	}
-
-	return rec, nil
+	return SerialFrame{}, lastErr
 }
 
 // Send message
@@ -115,6 +133,15 @@ func (c *Connection) receive() (SerialFrame, error) {
 	// Set overall message deadline
 	// Port timeout used for single read() calls
 	deadline := time.Now().Add(500 * time.Millisecond)
+	startTime := time.Now()
+	defer func() {
+		t := time.Since(startTime)
+		if t > longestWait {
+			longestWait = t
+			fmt.Println(longestWait)
+		}
+		recentWait = t
+	}()
 
 	// Buffers for reading data from serial
 	buffer := []byte{}
@@ -151,6 +178,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 				// Complete frame received
 				var msg SerialFrame
 				if err := json.Unmarshal(buffer, &msg); err != nil {
+					fmt.Println(string(buffer))
 					return SerialFrame{}, err
 				}
 				if msg.Event == "error" {
