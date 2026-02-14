@@ -1,7 +1,6 @@
 package usb
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"sync"
@@ -19,8 +18,7 @@ type SerialFrame struct {
 
 // Handles messaging and connection lifetime
 type Connection struct {
-	port   serial.Port
-	reader *bufio.Reader
+	port serial.Port
 
 	mu sync.Mutex
 }
@@ -47,13 +45,9 @@ func NewConnection(portName string, baud int) (*Connection, error) {
 	port.SetDTR(false)
 	port.SetRTS(false)
 
-	// Create serial reader
-	reader := bufio.NewReader(port)
-
-	// Create connection object with port and reader
+	// Create connection object with port
 	connection := Connection{
-		port:   port,
-		reader: reader,
+		port: port,
 	}
 
 	// Check if connection succeeded
@@ -90,7 +84,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	// Read response
 	rec, err := c.receive()
 	if err != nil {
-		return SerialFrame{}, nil
+		return SerialFrame{}, err
 	}
 
 	return rec, nil
@@ -118,26 +112,59 @@ func (c *Connection) send(msg SerialFrame) error {
 
 // Receive message
 func (c *Connection) receive() (SerialFrame, error) {
-	// Read serial until newline
-	line, err := c.reader.ReadString('\n')
-	if err != nil {
-		return SerialFrame{}, err
+	// Set overall message deadline
+	// Port timeout used for single read() calls
+	deadline := time.Now().Add(500 * time.Millisecond)
+
+	// Buffers for reading data from serial
+	buffer := []byte{}
+	tmp := make([]byte, 1024)
+
+	readStarted := false
+
+	// Retry receive message until deadline
+	for time.Now().Before(deadline) {
+		// Read bytes to tmp buffer
+		nBytes, err := c.port.Read(tmp)
+		if err != nil {
+			return SerialFrame{}, err
+		}
+		if nBytes == 0 {
+			continue
+		}
+
+		for i := range nBytes {
+			b := tmp[i]
+
+			// Wait for start of frame
+			if !readStarted {
+				if b == '{' {
+					readStarted = true
+					buffer = buffer[:0]
+					buffer = append(buffer, b)
+				}
+				continue
+			}
+
+			// Accumulate bytes until newline
+			if b == '\n' {
+				// Complete frame received
+				var msg SerialFrame
+				if err := json.Unmarshal(buffer, &msg); err != nil {
+					return SerialFrame{}, err
+				}
+				if msg.Event == "error" {
+					return SerialFrame{}, errors.New(msg.Payload["status"].(string))
+				}
+
+				return msg, nil
+			}
+
+			buffer = append(buffer, b)
+		}
 	}
 
-	var msg SerialFrame
-
-	// Unmarshal json to struct
-	err = json.Unmarshal([]byte(line), &msg)
-	if err != nil {
-		return SerialFrame{}, err
-	}
-	if msg.Event == "error" {
-		return SerialFrame{}, errors.New(msg.Payload["status"].(string))
-	}
-
-	// fmt.Println(msg)
-
-	return msg, nil
+	return SerialFrame{}, errors.New("serial receive timeout")
 }
 
 // Checks if the serial port is connected with ping messages
