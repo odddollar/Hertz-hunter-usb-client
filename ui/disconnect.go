@@ -7,6 +7,6 @@ func (u *Ui) disconnectUSBSerial() {
 
 	// Switch ui elements
 	u.enableConnectionUi()
-	u.switchConnectionButtons()
+	u.showConnectButton()
 	u.disableSettingsUi()
 }

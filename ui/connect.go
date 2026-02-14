@@ -38,7 +38,7 @@ func (u *Ui) connectUSBSerial() {
 	}
 
 	// Switch which connection button is visible
-	u.switchConnectionButtons()
+	u.showDisconnectButton()
 
 	// Enable settings ui
 	u.enableSettingsUi()

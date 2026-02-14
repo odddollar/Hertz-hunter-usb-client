@@ -6,7 +6,7 @@ func (u *Ui) connectionError(err error) {
 	u.schema.Stop()
 
 	u.enableConnectionUi()
-	u.switchConnectionButtons()
+	u.showConnectButton()
 	u.disableSettingsUi()
 	u.showError(err)
 }

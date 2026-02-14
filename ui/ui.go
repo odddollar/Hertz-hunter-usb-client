@@ -234,20 +234,20 @@ func (u *Ui) enableSettingsUi() {
 	})
 }
 
-// Switch which connection button is visible
-// TODO: Split into separate show connect and show disconnect button functions
-func (u *Ui) switchConnectionButtons() {
-	if !u.connectButton.Hidden && u.disconnectButton.Hidden {
-		fyne.Do(func() {
-			u.connectButton.Hide()
-			u.disconnectButton.Show()
-		})
-	} else if u.connectButton.Hidden && !u.disconnectButton.Hidden {
-		fyne.Do(func() {
-			u.connectButton.Show()
-			u.disconnectButton.Hide()
-		})
-	}
+// Show connect button
+func (u *Ui) showConnectButton() {
+	fyne.Do(func() {
+		u.connectButton.Show()
+		u.disconnectButton.Hide()
+	})
+}
+
+// Show disconnect button
+func (u *Ui) showDisconnectButton() {
+	fyne.Do(func() {
+		u.connectButton.Hide()
+		u.disconnectButton.Show()
+	})
 }
 
 // Switch which band labels are visible
