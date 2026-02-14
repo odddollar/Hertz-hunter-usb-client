@@ -1,3 +1,9 @@
+// DISCLAIMER
+//
+// The connection/communication code here, particularly the Communicate() and receive()
+// functions, operates on a "works" rather than "is correct" basis. It's hacky, but it's
+// the best I could come up with.
+
 package usb
 
 import (
