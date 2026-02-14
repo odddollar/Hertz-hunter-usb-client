@@ -25,6 +25,7 @@ type Ui struct {
 	// Main ui components
 	titleLabel              *canvas.Text
 	aboutButton             *widget.Button
+	switchBandButton        *widget.Button
 	graphImage              *canvas.Image
 	leftRssiLabels          *fyne.Container
 	rightRssiLabels         *fyne.Container
@@ -46,6 +47,9 @@ type Ui struct {
 
 	// Store current graph image
 	currentGraphImage image.Image
+
+	// Store band state
+	lowband bool
 
 	// Store current calibration values
 	highRssiCalibration int
@@ -69,6 +73,9 @@ func (u *Ui) NewUI() {
 
 	// Create about button
 	u.aboutButton = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showAbout)
+
+	// Create switch band button
+	u.switchBandButton = widget.NewButton("Switch Band", u.switchBand)
 
 	// Create graph display area
 	u.currentGraphImage = utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
@@ -170,6 +177,7 @@ func (u *Ui) NewUI() {
 				u.titleLabel,
 			),
 			configAccordion,
+			u.switchBandButton,
 		),
 		container.NewVBox(
 			u.highbandFrequencyLabels,
@@ -222,6 +230,7 @@ func (u *Ui) disableSettingsUi() {
 		u.highRssiCalibrationEntry.Disable()
 		u.lowRssiCalibrationEntry.Disable()
 		u.calibrationSetButton.Disable()
+		u.switchBandButton.Disable()
 	})
 }
 
@@ -231,6 +240,7 @@ func (u *Ui) enableSettingsUi() {
 		u.highRssiCalibrationEntry.Enable()
 		u.lowRssiCalibrationEntry.Enable()
 		u.calibrationSetButton.Enable()
+		u.switchBandButton.Enable()
 	})
 }
 

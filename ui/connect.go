@@ -43,6 +43,13 @@ func (u *Ui) connectUSBSerial() {
 	// Enable settings ui
 	u.enableSettingsUi()
 
+	// Set to high band
+	err = u.schema.SetBand(false)
+	if err != nil {
+		u.connectionError(err)
+		return
+	}
+
 	// Get calibration values
 	u.lowRssiCalibration, u.highRssiCalibration, err = u.schema.GetCalibratedValues()
 	if err != nil {
@@ -77,6 +84,8 @@ func (u *Ui) connectUSBSerial() {
 
 				fyne.Do(func() {
 					u.graphImage.Refresh()
+
+					// Automatically switch band labels
 					u.switchBandLabels(values.Lowband)
 				})
 

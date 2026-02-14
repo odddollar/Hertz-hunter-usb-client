@@ -23,3 +23,11 @@ func (u *Ui) setCalibrationValues() {
 
 	u.showSuccess("Calibration set")
 }
+
+// Callback for switch band button
+func (u *Ui) switchBand() {
+	// Toggle band
+	u.lowband = !u.lowband
+
+	u.schema.SetBand(u.lowband)
+}
