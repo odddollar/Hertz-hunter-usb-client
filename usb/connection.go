@@ -10,7 +10,6 @@ import (
 	"go.bug.st/serial"
 )
 
-var longestWait time.Duration
 var recentWait time.Duration
 
 // Format of serial frame
@@ -84,13 +83,14 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	maxAttempts := 2
 
 	for i := range maxAttempts {
-		// Clear read buffer before attempts
+		// Drain serial receive to start buffer fresh
 		c.port.ResetInputBuffer()
 
 		// Send message
 		if err := c.send(msg); err != nil {
 			lastErr = err
 			fmt.Printf("Retrying send: %d\n", i)
+			time.Sleep(50 * time.Millisecond)
 			continue
 		}
 
@@ -99,6 +99,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		if err != nil {
 			lastErr = err
 			fmt.Printf("Retrying receive: %d, %s, %s\n", i, err, recentWait)
+			time.Sleep(50 * time.Millisecond)
 			continue
 		}
 
@@ -135,12 +136,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 	deadline := time.Now().Add(500 * time.Millisecond)
 	startTime := time.Now()
 	defer func() {
-		t := time.Since(startTime)
-		if t > longestWait {
-			longestWait = t
-			fmt.Println(longestWait)
-		}
-		recentWait = t
+		recentWait = time.Since(startTime)
 	}()
 
 	// Buffers for reading data from serial
@@ -160,6 +156,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 			continue
 		}
 
+		// Process each received byte
 		for i := range nBytes {
 			b := tmp[i]
 
@@ -167,27 +164,30 @@ func (c *Connection) receive() (SerialFrame, error) {
 			if !readStarted {
 				if b == '{' {
 					readStarted = true
-					buffer = buffer[:0]
 					buffer = append(buffer, b)
 				}
 				continue
 			}
 
-			// Accumulate bytes until newline
+			// Process full frame when newline received
 			if b == '\n' {
-				// Complete frame received
 				var msg SerialFrame
 				if err := json.Unmarshal(buffer, &msg); err != nil {
 					fmt.Println(string(buffer))
 					return SerialFrame{}, err
 				}
 				if msg.Event == "error" {
-					return SerialFrame{}, errors.New(msg.Payload["status"].(string))
+					// Safe type assertion
+					if status, ok := msg.Payload["status"].(string); ok {
+						return SerialFrame{}, errors.New(status)
+					}
+					return SerialFrame{}, errors.New("unknown device error")
 				}
 
 				return msg, nil
 			}
 
+			// Accumulate bytes
 			buffer = append(buffer, b)
 		}
 	}
