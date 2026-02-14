@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -83,38 +82,18 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	const maxAttempts = 2
-	var lastErr error
-
-	// Try to communicate up to X times
-	for i := range maxAttempts {
-		// Send message
-		if err := c.send(msg); err != nil {
-			lastErr = err
-			fmt.Printf("Retrying send: %d\n", i)
-
-			c.port.ResetInputBuffer()
-			c.port.ResetOutputBuffer()
-			continue
-		}
-
-		// Read response
-		rec, err := c.receive()
-		if err != nil {
-			lastErr = err
-
-			time.Sleep(50 * time.Millisecond)
-			fmt.Printf("Retrying receive: %d\n", i)
-
-			c.port.ResetInputBuffer()
-			c.port.ResetOutputBuffer()
-			continue
-		}
-
-		return rec, nil
+	// Send message
+	if err := c.send(msg); err != nil {
+		return SerialFrame{}, err
 	}
 
-	return SerialFrame{}, lastErr
+	// Read response
+	rec, err := c.receive()
+	if err != nil {
+		return SerialFrame{}, nil
+	}
+
+	return rec, nil
 }
 
 // Send message
@@ -156,7 +135,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 		return SerialFrame{}, errors.New(msg.Payload["status"].(string))
 	}
 
-	fmt.Println(msg)
+	// fmt.Println(msg)
 
 	return msg, nil
 }
