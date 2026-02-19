@@ -29,5 +29,10 @@ func (u *Ui) switchBand() {
 	// Toggle band
 	u.lowband = !u.lowband
 
-	u.schema.SetBand(u.lowband)
+	// Send to device
+	err := u.schema.SetBand(u.lowband)
+	if err != nil {
+		u.showError(err)
+		return
+	}
 }
