@@ -317,3 +317,12 @@ func (u *Ui) updateCalibrationEntries() {
 		u.lowRssiCalibrationEntry.SetText(fmt.Sprint(u.lowRssiCalibration))
 	})
 }
+
+// Updates selected entries for settings
+func (u *Ui) updateSettingsIndices(scan_interval_index, buzzer_index, battery_alarm_index int) {
+	fyne.Do(func() {
+		u.scanIntervalSelect.SetSelectedIndex(scan_interval_index)
+		u.buzzerSelect.SetSelectedIndex(buzzer_index)
+		u.batteryAlarmSelect.SetSelectedIndex(battery_alarm_index)
+	})
+}

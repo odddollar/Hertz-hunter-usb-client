@@ -50,6 +50,14 @@ func (u *Ui) connectUSBSerial() {
 		return
 	}
 
+	// Get settings values
+	scan_interval_index, buzzer_index, battery_alarm_index, err := u.schema.GetSettingsIndices()
+	if err != nil {
+		u.connectionError(err)
+		return
+	}
+	u.updateSettingsIndices(scan_interval_index, buzzer_index, battery_alarm_index)
+
 	// Get calibration values
 	u.lowRssiCalibration, u.highRssiCalibration, err = u.schema.GetCalibratedValues()
 	if err != nil {
