@@ -145,7 +145,7 @@ func (u *Ui) NewUI() {
 	u.batteryAlarmSelect = widget.NewSelect([]string{"3.6v", "3.3v", "3.0v"}, func(s string) {})
 
 	// Create settings set button
-	u.settingsSetButton = widget.NewButton("Set", func() {})
+	u.settingsSetButton = widget.NewButton("Set", func() { go u.setSettingsIndices() })
 	u.settingsSetButton.Importance = widget.HighImportance
 
 	// Create container for settings items

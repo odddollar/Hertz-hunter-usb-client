@@ -4,6 +4,23 @@ import (
 	"strconv"
 )
 
+// Callback for set settings button
+func (u *Ui) setSettingsIndices() {
+	// Get values from dropdowns
+	scan_interval_index := u.scanIntervalSelect.SelectedIndex()
+	buzzer_index := u.buzzerSelect.SelectedIndex()
+	battery_alarm_index := u.batteryAlarmSelect.SelectedIndex()
+
+	// Set indices
+	err := u.schema.SetSettingsIndices(scan_interval_index, buzzer_index, battery_alarm_index)
+	if err != nil {
+		u.showError(err)
+		return
+	}
+
+	u.showSuccess("Settings set")
+}
+
 // Callback for set calibration button
 func (u *Ui) setCalibrationValues() {
 	// Get values from entries
