@@ -40,6 +40,12 @@ type Ui struct {
 	connectButton              *widget.Button
 	disconnectButton           *widget.Button
 
+	// Settings ui components
+	scanIntervalSelect *widget.Select
+	buzzerSelect       *widget.Select
+	batteryAlarmSelect *widget.Select
+	settingsSetButton  *widget.Button
+
 	// Calibration ui components
 	highRssiCalibrationEntry *widget.Entry
 	lowRssiCalibrationEntry  *widget.Entry
@@ -133,6 +139,25 @@ func (u *Ui) NewUI() {
 		u.disconnectButton,
 	)
 
+	// Create selects for settings
+	u.scanIntervalSelect = widget.NewSelect([]string{"2.5MHz", "5MHz", "10MHz"}, func(s string) {})
+	u.buzzerSelect = widget.NewSelect([]string{"On", "Off"}, func(s string) {})
+	u.batteryAlarmSelect = widget.NewSelect([]string{"3.6v", "3.3v", "3.0v"}, func(s string) {})
+
+	// Create settings set button
+	u.settingsSetButton = widget.NewButton("Set", func() {})
+	u.settingsSetButton.Importance = widget.HighImportance
+
+	// Create container for settings items
+	settingsContainer := container.NewVBox(
+		widget.NewForm(
+			widget.NewFormItem("Scan Interval", u.scanIntervalSelect),
+			widget.NewFormItem("Buzzer", u.buzzerSelect),
+			widget.NewFormItem("Battery Alarm Threshold", u.batteryAlarmSelect),
+		),
+		u.settingsSetButton,
+	)
+
 	// Create entries for calibration rssi
 	u.highRssiCalibrationEntry = widget.NewEntry()
 	u.highRssiCalibrationEntry.Validator = validation.NewRegexp(
@@ -161,6 +186,7 @@ func (u *Ui) NewUI() {
 	// Create accordion for configuration items
 	configAccordion := widget.NewAccordion(
 		widget.NewAccordionItem("Connection", connectionContainer),
+		widget.NewAccordionItem("Settings", settingsContainer),
 		widget.NewAccordionItem("Calibration", calibrationContainer),
 	)
 	configAccordion.MultiOpen = true
@@ -227,6 +253,10 @@ func (u *Ui) enableConnectionUi() {
 // Disable ui elements related to settings
 func (u *Ui) disableSettingsUi() {
 	fyne.Do(func() {
+		u.scanIntervalSelect.Disable()
+		u.buzzerSelect.Disable()
+		u.batteryAlarmSelect.Disable()
+		u.settingsSetButton.Disable()
 		u.highRssiCalibrationEntry.Disable()
 		u.lowRssiCalibrationEntry.Disable()
 		u.calibrationSetButton.Disable()
@@ -237,6 +267,10 @@ func (u *Ui) disableSettingsUi() {
 // Enable ui elements related to settings
 func (u *Ui) enableSettingsUi() {
 	fyne.Do(func() {
+		u.scanIntervalSelect.Enable()
+		u.buzzerSelect.Enable()
+		u.batteryAlarmSelect.Enable()
+		u.settingsSetButton.Enable()
 		u.highRssiCalibrationEntry.Enable()
 		u.lowRssiCalibrationEntry.Enable()
 		u.calibrationSetButton.Enable()
