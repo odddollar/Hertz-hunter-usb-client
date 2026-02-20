@@ -5,7 +5,6 @@ import (
 	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
-	"image"
 	"image/color"
 
 	"fyne.io/fyne/v2"
@@ -26,7 +25,7 @@ type Ui struct {
 	titleLabel              *canvas.Text
 	aboutButton             *widget.Button
 	switchBandButton        *widget.Button
-	graphImage              *canvas.Image
+	graphImage              *widgets.RssiGraph
 	leftRssiLabels          *fyne.Container
 	rightRssiLabels         *fyne.Container
 	highbandFrequencyLabels *fyne.Container
@@ -50,9 +49,6 @@ type Ui struct {
 	highRssiCalibrationEntry *widget.Entry
 	lowRssiCalibrationEntry  *widget.Entry
 	calibrationSetButton     *widget.Button
-
-	// Store current graph image
-	currentGraphImage image.Image
 
 	// Store band state
 	lowband bool
@@ -84,10 +80,7 @@ func (u *Ui) NewUI() {
 	u.switchBandButton = widget.NewButton("Switch Band", u.switchBand)
 
 	// Create graph display area
-	u.currentGraphImage = utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black)
-	u.graphImage = canvas.NewImageFromImage(u.currentGraphImage)
-	u.graphImage.FillMode = canvas.ImageFillStretch  // Pixel perfect scaling
-	u.graphImage.ScaleMode = canvas.ImageScalePixels // Nearest neighbor for pixel perfect
+	u.graphImage = widgets.NewRssiGraph(utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black))
 
 	// Create rssi labels
 	u.leftRssiLabels = newRssiScale(fyne.TextAlignTrailing)

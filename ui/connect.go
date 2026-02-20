@@ -87,11 +87,8 @@ func (u *Ui) connectUSBSerial() {
 					u.highRssiCalibration,
 				)
 
-				u.currentGraphImage = img
-				u.graphImage.Image = u.currentGraphImage
-
 				fyne.Do(func() {
-					u.graphImage.Refresh()
+					u.graphImage.UpdateImage(img)
 
 					// Automatically switch band labels
 					u.switchBandLabels(values.Lowband)
