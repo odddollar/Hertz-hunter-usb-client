@@ -43,10 +43,16 @@ func (s *Schema) StartPollValues(period time.Duration) (<-chan ValuesResult, <-c
 				// Get lowband state
 				lowband, _ := data.Payload["lowband"].(bool)
 
+				// Get min and max frequency
+				minFrequency, _ := data.Payload["min_frequency"].(float64)
+				maxFrequency, _ := data.Payload["max_frequency"].(float64)
+
 				// Send data over channel
 				valuesCh <- ValuesResult{
-					Values:  values,
-					Lowband: lowband,
+					Values:       values,
+					Lowband:      lowband,
+					MinFrequency: int(minFrequency),
+					MaxFrequency: int(maxFrequency),
 				}
 			case <-ctx.Done():
 				return

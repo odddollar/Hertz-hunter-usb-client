@@ -13,8 +13,10 @@ type Schema struct {
 
 // Used to return lowband state with values on polling
 type ValuesResult struct {
-	Values  []int
-	Lowband bool
+	Values       []int
+	Lowband      bool
+	MinFrequency int
+	MaxFrequency int
 }
 
 // Create new schema object

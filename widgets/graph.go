@@ -42,6 +42,9 @@ type RssiGraph struct {
 
 	// Run time relevant state
 	tooltipVisible bool
+	rssiValues     []int
+	minFrequency   int
+	maxFrequency   int
 }
 
 // Creates new RssiGraph widget
@@ -96,12 +99,17 @@ func (r *RssiGraph) MouseOut() {
 }
 
 // Updates graph image
-func (r *RssiGraph) UpdateGraph(numbers []int, minCalibration, maxCalibration int) {
+func (r *RssiGraph) UpdateGraph(numbers []int, minCalibration, maxCalibration int, minFrequency, maxFrequency int) {
 	if len(numbers) == 0 {
 		return
 	}
 
-	// Ccreate blank image and calculate values
+	// Used for calculating tooltip text
+	r.rssiValues = numbers
+	r.minFrequency = minFrequency
+	r.maxFrequency = maxFrequency
+
+	// Create blank image and calculate values
 	img := newEmptyImage(r.graphWidth, r.graphHeight, color.Black)
 	barWidth := float64(r.graphWidth) / float64(len(numbers))
 	valueRange := float64(maxCalibration - minCalibration)
@@ -156,20 +164,36 @@ func (r *RssiGraph) updateTooltip(localPos fyne.Position) {
 		return
 	}
 
-	// Displays mouse coordinates
-	// Will be updated later
-	bounds := r.graphCanvas.Image.Bounds()
-	relX := localPos.X / drawSize.Width
-	relY := localPos.Y / drawSize.Height
-	x := int(math.Floor(float64(relX * float32(bounds.Dx()))))
-	y := int(math.Floor(float64(relY * float32(bounds.Dy()))))
-	x = min(max(x, 0), bounds.Dx()-1)
-	y = min(max(y, 0), bounds.Dy()-1)
-	tooltipText := fmt.Sprintf("x: %d, y: %d", x, y)
+	// Calculate number of bars over from 0
+	barCount := len(r.rssiValues)
+	displayWidth := int(drawSize.Width)
+	mouseX := int(localPos.X)
+	barsOver := (mouseX * barCount) / displayWidth
+
+	// Calculate hovered frequency
+	step := float64(r.maxFrequency-r.minFrequency) / float64(len(r.rssiValues)-1)
+	frequency := int(math.Round(step*float64(barsOver) + float64(r.minFrequency)))
+
+	tooltipText := fmt.Sprintf("%dMHz", frequency)
 	if r.tooltipText.Text != tooltipText {
 		r.tooltipText.Text = tooltipText
 		r.Refresh()
 	}
+
+	// Displays mouse coordinates
+	// Will be updated later
+	// bounds := r.graphCanvas.Image.Bounds()
+	// relX := localPos.X / drawSize.Width
+	// relY := localPos.Y / drawSize.Height
+	// x := int(math.Floor(float64(relX * float32(bounds.Dx()))))
+	// y := int(math.Floor(float64(relY * float32(bounds.Dy()))))
+	// x = min(max(x, 0), bounds.Dx()-1)
+	// y = min(max(y, 0), bounds.Dy()-1)
+	// tooltipText := fmt.Sprintf("x: %d, y: %d", x, y)
+	// if r.tooltipText.Text != tooltipText {
+	// 	r.tooltipText.Text = tooltipText
+	// 	r.Refresh()
+	// }
 
 	// Get proper tooltip sizing
 	padding := float32(6)

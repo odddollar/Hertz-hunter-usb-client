@@ -84,6 +84,8 @@ func (u *Ui) connectUSBSerial() {
 						values.Values,
 						u.lowRssiCalibration,
 						u.highRssiCalibration,
+						values.MinFrequency,
+						values.MaxFrequency,
 					)
 
 					// Automatically switch band labels
