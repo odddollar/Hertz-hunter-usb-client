@@ -6,6 +6,7 @@ import (
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
 	"image/color"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -14,6 +15,22 @@ import (
 	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+)
+
+var (
+	// Baudrates used in ui dropdown
+	BAUDRATES        = []int{9600, 19200, 38400, 57600, 115200}
+	DEFAULT_BAUDRATE = 115200
+
+	// Graph refresh intervals used in ui dropdown
+	REFRESH_INTERVALS        = []time.Duration{100 * time.Millisecond, 250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second}
+	DEFAULT_REFRESH_INTERVAL = 250 * time.Millisecond
+)
+
+// Dimensions for graph image
+const (
+	GRAPH_WIDTH  = 998
+	GRAPH_HEIGHT = 600
 )
 
 type Ui struct {
