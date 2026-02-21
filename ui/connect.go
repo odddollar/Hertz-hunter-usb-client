@@ -2,7 +2,6 @@ package ui
 
 import (
 	"Hertz-Hunter-USB-Client/schema"
-	"Hertz-Hunter-USB-Client/utils"
 	"errors"
 
 	"fyne.io/fyne/v2"
@@ -79,16 +78,13 @@ func (u *Ui) connectUSBSerial() {
 					return
 				}
 
-				img := utils.CreateGraph(
-					values.Values,
-					GRAPH_WIDTH,
-					GRAPH_HEIGHT,
-					u.lowRssiCalibration,
-					u.highRssiCalibration,
-				)
-
 				fyne.Do(func() {
-					u.graphImage.UpdateImage(img)
+					// Update image with new values
+					u.graphImage.UpdateGraph(
+						values.Values,
+						u.lowRssiCalibration,
+						u.highRssiCalibration,
+					)
 
 					// Automatically switch band labels
 					u.switchBandLabels(values.Lowband)

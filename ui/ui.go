@@ -2,11 +2,9 @@ package ui
 
 import (
 	"Hertz-Hunter-USB-Client/schema"
-	"Hertz-Hunter-USB-Client/utils"
 	"Hertz-Hunter-USB-Client/widgets"
 	"fmt"
 	"image/color"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -15,22 +13,6 @@ import (
 	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-)
-
-var (
-	// Baudrates used in ui dropdown
-	BAUDRATES        = []int{9600, 19200, 38400, 57600, 115200}
-	DEFAULT_BAUDRATE = 115200
-
-	// Graph refresh intervals used in ui dropdown
-	REFRESH_INTERVALS        = []time.Duration{100 * time.Millisecond, 250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second}
-	DEFAULT_REFRESH_INTERVAL = 250 * time.Millisecond
-)
-
-// Dimensions for graph image
-const (
-	GRAPH_WIDTH  = 998
-	GRAPH_HEIGHT = 600
 )
 
 type Ui struct {
@@ -97,7 +79,7 @@ func (u *Ui) NewUI() {
 	u.switchBandButton = widget.NewButton("Switch Band", u.switchBand)
 
 	// Create graph display area
-	u.graphImage = widgets.NewRssiGraph(utils.NewEmptyImage(GRAPH_WIDTH, GRAPH_HEIGHT, color.Black))
+	u.graphImage = widgets.NewRssiGraph(GRAPH_WIDTH, GRAPH_HEIGHT)
 
 	// Create rssi labels
 	u.leftRssiLabels = newRssiScale(fyne.TextAlignTrailing)
@@ -117,11 +99,11 @@ func (u *Ui) NewUI() {
 	u.portsRefreshButton = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), u.refreshPortsDisplay)
 
 	// Create baudrate entry
-	u.baudrateSelect = widget.NewSelect(utils.IntsToStrings(BAUDRATES), func(s string) {})
+	u.baudrateSelect = widget.NewSelect(intsToStrings(BAUDRATES), func(s string) {})
 	u.baudrateSelect.SetSelected(fmt.Sprint(DEFAULT_BAUDRATE))
 
 	// Create refresh graph dropdown
-	u.graphRefreshIntervalSelect = widget.NewSelect(utils.DurationsToStrings(REFRESH_INTERVALS), func(s string) {})
+	u.graphRefreshIntervalSelect = widget.NewSelect(durationsToStrings(REFRESH_INTERVALS), func(s string) {})
 	u.graphRefreshIntervalSelect.SetSelected(fmt.Sprintf("%.2gs", DEFAULT_REFRESH_INTERVAL.Seconds()))
 
 	// Create connect button

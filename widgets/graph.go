@@ -9,8 +9,23 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/driver/desktop"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
+
+// Generate empty image
+func newEmptyImage(width, height int, c color.Color) *image.NRGBA {
+	img := image.NewNRGBA(image.Rect(0, 0, width, height))
+
+	// Fill background
+	for y := range height {
+		for x := range width {
+			img.Set(x, y, c)
+		}
+	}
+
+	return img
+}
 
 // Custom widget that displays rssi graph and shows bar data when hovered
 type RssiGraph struct {
@@ -21,13 +36,18 @@ type RssiGraph struct {
 	tooltipBg   *canvas.Rectangle
 	tooltipText *canvas.Text
 
+	// Constants
+	graphWidth  int
+	graphHeight int
+
+	// Run time relevant state
 	tooltipVisible bool
 }
 
 // Creates new RssiGraph widget
-func NewRssiGraph(img image.Image) *RssiGraph {
+func NewRssiGraph(graphWidth, graphHeight int) *RssiGraph {
 	// Create graph canvas from given image
-	graphCanvas := canvas.NewImageFromImage(img)
+	graphCanvas := canvas.NewImageFromImage(newEmptyImage(graphWidth, graphHeight, color.Black))
 	graphCanvas.FillMode = canvas.ImageFillStretch
 	graphCanvas.ScaleMode = canvas.ImageScalePixels
 
@@ -48,6 +68,8 @@ func NewRssiGraph(img image.Image) *RssiGraph {
 		tooltipBg:      tooltipBg,
 		tooltipText:    tooltipText,
 		tooltipVisible: false,
+		graphWidth:     graphWidth,
+		graphHeight:    graphHeight,
 	}
 
 	// Extend base widget and return
@@ -74,7 +96,41 @@ func (r *RssiGraph) MouseOut() {
 }
 
 // Updates graph image
-func (r *RssiGraph) UpdateImage(img image.Image) {
+func (r *RssiGraph) UpdateGraph(numbers []int, minCalibration, maxCalibration int) {
+	if len(numbers) == 0 {
+		return
+	}
+
+	// Ccreate blank image and calculate values
+	img := newEmptyImage(r.graphWidth, r.graphHeight, color.Black)
+	barWidth := float64(r.graphWidth) / float64(len(numbers))
+	valueRange := float64(maxCalibration - minCalibration)
+
+	for i, value := range numbers {
+		// Clamp value to range
+		if value < minCalibration {
+			value = minCalibration
+		}
+		if value > maxCalibration {
+			value = maxCalibration
+		}
+
+		// Normalise value
+		normalised := float64(value-minCalibration) / valueRange
+		barHeight := int(normalised * float64(r.graphHeight))
+
+		x1 := int(float64(i) * barWidth)
+		x2 := int(float64(i+1) * barWidth)
+		y1 := r.graphHeight - barHeight
+
+		// Draw bar
+		for y := y1; y < r.graphHeight; y++ {
+			for x := x1; x < x2 && x < r.graphWidth; x++ {
+				img.Set(x, y, theme.Color(theme.ColorNamePrimary))
+			}
+		}
+	}
+
 	r.graphCanvas.Image = img
 	r.Refresh()
 }
