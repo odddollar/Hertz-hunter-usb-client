@@ -26,6 +26,17 @@ func newEmptyImage(width, height int, c color.Color) *image.NRGBA {
 	return img
 }
 
+// Clamp and map value from one range to another
+func mapClamped(value, inMin, inMax, outMin, outMax int) int {
+	if value < inMin {
+		value = inMin
+	}
+	if value > inMax {
+		value = inMax
+	}
+	return outMin + (value-inMin)*(outMax-outMin)/(inMax-inMin)
+}
+
 // Custom widget that displays rssi graph and shows bar data when hovered
 type RssiGraph struct {
 	widget.BaseWidget
@@ -40,9 +51,11 @@ type RssiGraph struct {
 	graphHeight int
 
 	// Calculate tooltip data
-	rssiValues   []int
-	minFrequency int
-	maxFrequency int
+	rssiValues     []int
+	minCalibration int
+	maxCalibration int
+	minFrequency   int
+	maxFrequency   int
 }
 
 // Creates new RssiGraph widget
@@ -65,11 +78,14 @@ func NewRssiGraph(graphWidth, graphHeight int) *RssiGraph {
 
 	// Create new object
 	graph := &RssiGraph{
-		graphCanvas: graphCanvas,
-		tooltipBg:   tooltipBg,
-		tooltipText: tooltipText,
-		graphWidth:  graphWidth,
-		graphHeight: graphHeight,
+		graphCanvas:    graphCanvas,
+		tooltipBg:      tooltipBg,
+		tooltipText:    tooltipText,
+		graphWidth:     graphWidth,
+		graphHeight:    graphHeight,
+		rssiValues:     make([]int, 1),
+		minCalibration: 0,
+		maxCalibration: 4096,
 	}
 
 	// Extend base widget and return
@@ -107,6 +123,8 @@ func (r *RssiGraph) UpdateGraph(
 	// Used for calculating tooltip text
 	// Updated every time data polled from device
 	r.rssiValues = numbers
+	r.minCalibration = minCalibration
+	r.maxCalibration = maxCalibration
 	r.minFrequency = minFrequency
 	r.maxFrequency = maxFrequency
 
@@ -156,6 +174,9 @@ func (r *RssiGraph) updateTooltip(localPos fyne.Position) {
 
 	// Calculate number of bars over from 0
 	barCount := len(r.rssiValues)
+	if barCount < 2 {
+		return
+	}
 	displayWidth := int(drawSize.Width)
 	mouseX := int(localPos.X)
 	if mouseX == displayWidth {
@@ -169,9 +190,13 @@ func (r *RssiGraph) updateTooltip(localPos fyne.Position) {
 	num := barsOver * freqRange
 	frequency := (num+denom/2)/denom + r.minFrequency
 
+	// Calculate signal strength
+	rssi := r.rssiValues[barsOver]
+	rssiStrength := mapClamped(rssi, r.minCalibration, r.maxCalibration, 0, 100)
+
 	// Format tooltip text
 	textChanged := false
-	tooltipText := fmt.Sprintf("%dMHz", frequency)
+	tooltipText := fmt.Sprintf("%dMHz, %d%%", frequency, rssiStrength)
 	if r.tooltipText.Text != tooltipText {
 		r.tooltipText.Text = tooltipText
 		textChanged = true
