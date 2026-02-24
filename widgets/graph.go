@@ -56,6 +56,10 @@ type RssiGraph struct {
 	maxCalibration int
 	minFrequency   int
 	maxFrequency   int
+
+	// Update tooltip position
+	lastMousePos fyne.Position
+	mouseIn      bool
 }
 
 // Creates new RssiGraph widget
@@ -83,7 +87,6 @@ func NewRssiGraph(graphWidth, graphHeight int) *RssiGraph {
 		tooltipText:    tooltipText,
 		graphWidth:     graphWidth,
 		graphHeight:    graphHeight,
-		rssiValues:     make([]int, 1),
 		minCalibration: 0,
 		maxCalibration: 4096,
 	}
@@ -95,16 +98,20 @@ func NewRssiGraph(graphWidth, graphHeight int) *RssiGraph {
 
 // Updates tooltip when mouse enters widget
 func (r *RssiGraph) MouseIn(event *desktop.MouseEvent) {
+	r.mouseIn = true
+	r.lastMousePos = event.Position
 	r.updateTooltip(event.Position)
 }
 
 // Updates tooltip when mouse moves over widget
 func (r *RssiGraph) MouseMoved(event *desktop.MouseEvent) {
+	r.lastMousePos = event.Position
 	r.updateTooltip(event.Position)
 }
 
 // Hides tooltip when mouse leaves widget
 func (r *RssiGraph) MouseOut() {
+	r.mouseIn = false
 	r.tooltipBg.Hide()
 	r.tooltipText.Hide()
 	r.Refresh()
@@ -162,6 +169,11 @@ func (r *RssiGraph) UpdateGraph(
 
 	r.graphCanvas.Image = img
 	r.Refresh()
+
+	// Update tooltip if mouse still inside
+	if r.mouseIn {
+		r.updateTooltip(r.lastMousePos)
+	}
 }
 
 // Updates tooltip position and text
@@ -195,12 +207,8 @@ func (r *RssiGraph) updateTooltip(localPos fyne.Position) {
 	rssiStrength := mapClamped(rssi, r.minCalibration, r.maxCalibration, 0, 100)
 
 	// Format tooltip text
-	textChanged := false
 	tooltipText := fmt.Sprintf("%dMHz, %d%%", frequency, rssiStrength)
-	if r.tooltipText.Text != tooltipText {
-		r.tooltipText.Text = tooltipText
-		textChanged = true
-	}
+	r.tooltipText.Text = tooltipText
 
 	// Get proper tooltip sizing
 	padding := float32(6)
@@ -230,9 +238,7 @@ func (r *RssiGraph) updateTooltip(localPos fyne.Position) {
 	// Show tooltip
 	r.tooltipBg.Show()
 	r.tooltipText.Show()
-	if textChanged {
-		r.Refresh()
-	}
+	r.Refresh()
 }
 
 // Returns new renderer for RssiGraph
