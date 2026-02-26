@@ -42,6 +42,18 @@ func (u *Ui) connectUSBSerial() {
 	// Enable settings ui
 	u.enableSettingsUi()
 
+	// Get battery enabled state and voltage
+	u.batteryEnabled = true
+	_, err = u.schema.GetBatteryVoltage()
+	if err != nil {
+		if err.Error() == "'location' must be 'values', 'settings', 'calibration', or 'ping'" {
+			u.batteryEnabled = false
+		} else {
+			u.connectionError(err)
+			return
+		}
+	}
+
 	// Set to high band
 	err = u.schema.SetBand(false)
 	if err != nil {
@@ -66,13 +78,6 @@ func (u *Ui) connectUSBSerial() {
 
 	// Update entries with calibration values
 	u.updateCalibrationEntries()
-
-	// Get battery voltage
-	_, err = u.schema.GetBatteryVoltage()
-	if err != nil {
-		u.connectionError(err)
-		return
-	}
 
 	// Start polling for values
 	valuesCh, errCh := u.schema.StartPollValues(pollRate)

@@ -56,6 +56,9 @@ type Ui struct {
 	highRssiCalibration int
 	lowRssiCalibration  int
 
+	// Whether battery is available
+	batteryEnabled bool
+
 	// Global schema object store
 	schema *schema.Schema
 }
