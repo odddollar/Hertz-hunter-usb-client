@@ -1,6 +1,6 @@
 # Hertz Hunter USB Client
 
-A USB client for the [Hertz Hunter](https://github.com/odddollar/Hertz-hunter) spectrum analyser. Uses Hertz Hunter's USB serial communication feature to request data from the device and display it visually within this program. This program provides almost full control over a connected Hertz Hunter device through a desktop app interface.
+A USB client for the [Hertz Hunter](https://github.com/odddollar/Hertz-hunter) spectrum analyser. Uses Hertz Hunter's USB serial communication feature to request data from the device and displays it visually on a computer. This program provides almost full control over a connected Hertz Hunter device through a desktop app interface.
 
 For further information on the capabilities of the Hertz Hunter project, please see the [main repository](https://github.com/odddollar/Hertz-hunter). The USB serial documentation and schema can be found [here](https://github.com/odddollar/Hertz-hunter/blob/master/USB.md).
 
@@ -17,12 +17,10 @@ For further information on the capabilities of the Hertz Hunter project, please 
   - `Scan Interval`, `Buzzer`, and `Battery Alarm Threshold` are all available
 - Manually set exact high and low RSSI calibration values
   - Refer to [here](https://github.com/odddollar/Hertz-hunter/blob/master/USAGE.md#rssi-calibration) and [here](https://github.com/odddollar/Hertz-hunter/blob/master/USB.md#eventgetlocationcalibration) for explanations of Hertz Hunter's RSSI calibration system
-- Control switching scanning between high and low bands
-- Collapsible UI elements to maximise display area for the graph
+- Switch scanning between high and low bands
+- Collapsible UI elements to maximise display area for the RSSI graph
 
 ## Connecting
-
-To connect to a Hertz Hunter device:
 
 1. Plug the Hertz Hunter device into the computer with a USB cable
 2. Open the `USB serial` menu from the `Advanced` menu on the device. Instructions [here](https://github.com/odddollar/Hertz-hunter/blob/master/USAGE.md)
@@ -31,15 +29,6 @@ To connect to a Hertz Hunter device:
 5. Select the same baud rate as displayed on Hertz Hunter's screen
 6. Select the `Graph Refresh Interval`. The default works well, but can be adjusted if desired
 7. Click `Connect`
-
-## Screenshots
-
-<div align="center">
-    <img src="./screenshots/Disconnected.png" alt="Disconnected"><br><br>
-    <img src="./screenshots/Graph.png" alt="Graph"><br><br>
-    <img src="./screenshots/Settings.png" alt="Settings">
-</div>
-
 
 ## Building
 
@@ -50,7 +39,7 @@ This program is built using the [Go](https://go.dev/) programming language and t
 - [Fyne's tooling](https://docs.fyne.io/started/packaging/)
   - Can be installed with `go install fyne.io/tools/cmd/fyne@latest`
 - (Optional) [UPX](https://github.com/upx/upx)
-  - Fyne projects can be large when compiled. Not necessary, but a nice-to-have
+  - Fyne projects can be large when compiled. Not necessary, but nice to have
 
 Clone this repository:
 
@@ -77,3 +66,10 @@ fyne package --release
 upx --ultra-brute "Hertz Hunter USB Client.exe"
 ```
 
+## Screenshots
+
+<div align="center">
+    <img src="./screenshots/Disconnected.png" alt="Disconnected"><br><br>
+    <img src="./screenshots/Graph.png" alt="Graph"><br><br>
+    <img src="./screenshots/Settings.png" alt="Settings">
+</div>
