@@ -1,6 +1,6 @@
 package schema
 
-import "Hertz-Hunter-USB-Client/usb"
+import "Hertz-Hunter-USB-client/usb"
 
 // Get settings indices
 // Returns scan_interval_index, buzzer_index, battery_alarm_index

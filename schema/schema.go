@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"Hertz-Hunter-USB-Client/usb"
+	"Hertz-Hunter-USB-client/usb"
 	"context"
 )
 

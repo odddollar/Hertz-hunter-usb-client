@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"Hertz-Hunter-USB-Client/usb"
+	"Hertz-Hunter-USB-client/usb"
 	"errors"
 )
 

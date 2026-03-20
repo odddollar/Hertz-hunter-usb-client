@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"Hertz-Hunter-USB-Client/widgets"
+	"Hertz-Hunter-USB-client/widgets"
 	"net/url"
 
 	"fyne.io/fyne/v2"

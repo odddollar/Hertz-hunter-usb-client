@@ -1,6 +1,6 @@
 package schema
 
-import "Hertz-Hunter-USB-Client/usb"
+import "Hertz-Hunter-USB-client/usb"
 
 // Set band to high or low band
 func (s *Schema) SetBand(lowband bool) error {

@@ -1,4 +1,4 @@
-module Hertz-Hunter-USB-Client
+module Hertz-Hunter-USB-client
 
 go 1.25.2
 

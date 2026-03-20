@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Hertz-Hunter-USB-Client/ui"
+	"Hertz-Hunter-USB-client/ui"
 )
 
 func main() {

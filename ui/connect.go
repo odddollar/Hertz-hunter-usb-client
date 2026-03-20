@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"Hertz-Hunter-USB-Client/schema"
+	"Hertz-Hunter-USB-client/schema"
 	"errors"
 
 	"fyne.io/fyne/v2"

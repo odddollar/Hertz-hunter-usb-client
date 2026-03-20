@@ -1,8 +1,8 @@
 package ui
 
 import (
-	"Hertz-Hunter-USB-Client/schema"
-	"Hertz-Hunter-USB-Client/widgets"
+	"Hertz-Hunter-USB-client/schema"
+	"Hertz-Hunter-USB-client/widgets"
 	"fmt"
 	"image/color"
 
