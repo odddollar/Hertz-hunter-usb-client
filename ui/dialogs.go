@@ -12,8 +12,8 @@ import (
 // Use Fyne-X extensions to create about window
 func (u *Ui) showAbout() {
 	// Parse urls for documentation
-	documentation, _ := url.Parse("https://github.com/odddollar/Hertz-hunter")
-	clientDocumentation, _ := url.Parse("https://github.com/odddollar/Hertz-hunter-usb-client")
+	documentation, _ := url.Parse("https://github.com/odddollar/Hertz-Hunter")
+	clientDocumentation, _ := url.Parse("https://github.com/odddollar/Hertz-Hunter-USB-client")
 
 	links := []*widget.Hyperlink{
 		widget.NewHyperlink("Hertz Hunter Documentation", documentation),
