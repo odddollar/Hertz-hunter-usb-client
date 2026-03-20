@@ -1,8 +1,8 @@
 # Hertz Hunter USB Client
 
-A USB client for the [Hertz Hunter](https://github.com/odddollar/Hertz-hunter) spectrum analyser. Uses Hertz Hunter's USB serial communication feature to request data from the device and displays it visually on a computer. This program provides almost full control over a connected Hertz Hunter device through a desktop app interface.
+A USB client for the [Hertz Hunter](https://github.com/odddollar/Hertz-Hunter) spectrum analyser. Uses Hertz Hunter's USB serial communication feature to request data from the device and displays it visually on a computer. This program provides almost full control over a connected Hertz Hunter device through a desktop app interface.
 
-For further information on the capabilities of the Hertz Hunter project, please see the [main repository](https://github.com/odddollar/Hertz-hunter). The USB serial documentation and schema can be found [here](https://github.com/odddollar/Hertz-hunter/blob/master/USB.md).
+For further information on the capabilities of the Hertz Hunter project, please see the [main repository](https://github.com/odddollar/Hertz-Hunter). The USB serial documentation and schema can be found [here](https://github.com/odddollar/Hertz-Hunter/blob/master/USB.md).
 
 ## Features
 
@@ -16,14 +16,14 @@ For further information on the capabilities of the Hertz Hunter project, please 
 - Ability to change and set all settings
   - `Scan Interval`, `Buzzer`, and `Battery Alarm Threshold` are all available
 - Manually set exact high and low RSSI calibration values
-  - Refer to [here](https://github.com/odddollar/Hertz-hunter/blob/master/USAGE.md#rssi-calibration) and [here](https://github.com/odddollar/Hertz-hunter/blob/master/USB.md#eventgetlocationcalibration) for explanations of Hertz Hunter's RSSI calibration system
+  - Refer to [here](https://github.com/odddollar/Hertz-Hunter/blob/master/USAGE.md#rssi-calibration) and [here](https://github.com/odddollar/Hertz-Hunter/blob/master/USB.md#eventgetlocationcalibration) for explanations of Hertz Hunter's RSSI calibration system
 - Switch scanning between high and low bands
 - Collapsible UI elements to maximise display area for the RSSI graph
 
 ## Connecting
 
 1. Plug the Hertz Hunter device into the computer with a USB cable
-2. Open the `USB serial` menu from the `Advanced` menu on the device. Instructions [here](https://github.com/odddollar/Hertz-hunter/blob/master/USAGE.md)
+2. Open the `USB serial` menu from the `Advanced` menu on the device. Instructions [here](https://github.com/odddollar/Hertz-Hunter/blob/master/USAGE.md)
 3. Launch the USB client application
 4. Refresh the serial port list (if necessary) and select the correct one
 5. Select the same baud rate as displayed on Hertz Hunter's screen
@@ -44,8 +44,8 @@ This program is built using the [Go](https://go.dev/) programming language and t
 Clone this repository:
 
 ```bash
-git clone https://github.com/odddollar/Hertz-hunter-usb-client.git
-cd Hertz-hunter-usb-client
+git clone https://github.com/odddollar/Hertz-Hunter-USB-client.git
+cd Hertz-Hunter-USB-client
 ```
 
 Run for testing/development with:
