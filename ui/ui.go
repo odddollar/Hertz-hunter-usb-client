@@ -161,11 +161,13 @@ func (u *Ui) NewUI() {
 		`^(?:[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5])$`,
 		"Must be integer between 0 and 4095 inclusive",
 	)
+	u.highRssiCalibrationEntry.OnChanged = func(s string) { u.validateCalibrationEntries() }
 	u.lowRssiCalibrationEntry = widget.NewEntry()
 	u.lowRssiCalibrationEntry.Validator = validation.NewRegexp(
 		`^(?:[0-9]|[1-9][0-9]{1,2}|[1-3][0-9]{3}|40[0-8][0-9]|409[0-5])$`,
 		"Must be integer between 0 and 4095 inclusive",
 	)
+	u.lowRssiCalibrationEntry.OnChanged = func(s string) { u.validateCalibrationEntries() }
 
 	// Create set button for calibration
 	u.calibrationSetButton = widget.NewButton("Set", func() { go u.setCalibrationValues() })
@@ -308,6 +310,18 @@ func (u *Ui) switchBandLabels(lowband bool) {
 			u.highbandFrequencyLabels.Show()
 			u.lowbandFrequencyLabels.Hide()
 		})
+	}
+}
+
+// Disables calibration set button if entries are invalid
+func (u *Ui) validateCalibrationEntries() {
+	highErr := u.highRssiCalibrationEntry.Validate()
+	lowErr := u.lowRssiCalibrationEntry.Validate()
+
+	if highErr == nil && lowErr == nil {
+		fyne.Do(func() { u.calibrationSetButton.Enable() })
+	} else {
+		fyne.Do(func() { u.calibrationSetButton.Disable() })
 	}
 }
 
