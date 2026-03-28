@@ -10,14 +10,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
 	"go.bug.st/serial"
 )
 
-var recentWait time.Duration
+// var recentWait time.Duration
 
 // Format of serial frame
 type SerialFrame struct {
@@ -89,7 +88,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 	var lastErr error
 	maxAttempts := 2
 
-	for i := range maxAttempts {
+	for range maxAttempts {
 		// Drain serial to start buffer fresh
 		c.port.ResetInputBuffer()
 		c.port.ResetOutputBuffer()
@@ -97,7 +96,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		// Send message
 		if err := c.send(msg); err != nil {
 			lastErr = err
-			fmt.Printf("Retrying send: %d\n", i)
+			// fmt.Printf("Retrying send: %d\n", i)
 			time.Sleep(50 * time.Millisecond)
 			continue
 		}
@@ -106,7 +105,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		rec, err := c.receive()
 		if err != nil {
 			lastErr = err
-			fmt.Printf("Retrying receive: %d, %s, %s\n", i, err, recentWait)
+			// fmt.Printf("Retrying receive: %s, %s\n", err, recentWait)
 			time.Sleep(50 * time.Millisecond)
 			continue
 		}
@@ -142,10 +141,11 @@ func (c *Connection) receive() (SerialFrame, error) {
 	// Set overall message deadline
 	// Port timeout used for single read() calls
 	deadline := time.Now().Add(500 * time.Millisecond)
-	startTime := time.Now()
-	defer func() {
-		recentWait = time.Since(startTime)
-	}()
+
+	// startTime := time.Now()
+	// defer func() {
+	// 	recentWait = time.Since(startTime)
+	// }()
 
 	// Buffers for reading data from serial
 	var buffer bytes.Buffer
@@ -181,7 +181,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 			if b == '\n' {
 				var msg SerialFrame
 				if err := json.Unmarshal(buffer.Bytes(), &msg); err != nil {
-					fmt.Println(buffer.String())
+					// fmt.Println(buffer.String())
 					return SerialFrame{}, err
 				}
 				if msg.Event == "error" {
