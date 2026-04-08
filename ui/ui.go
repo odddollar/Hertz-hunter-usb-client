@@ -4,7 +4,6 @@ import (
 	"Hertz-Hunter-USB-client/schema"
 	"Hertz-Hunter-USB-client/widgets"
 	"fmt"
-	"image/color"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -75,7 +74,7 @@ func (u *Ui) NewUI() {
 	u.w = u.a.NewWindow("Hertz Hunter USB Client")
 
 	// Create title widget
-	u.titleLabel = canvas.NewText("Hertz Hunter USB Client", color.Black)
+	u.titleLabel = canvas.NewText("Hertz Hunter USB Client", theme.Color(theme.ColorNameForeground))
 	u.titleLabel.Alignment = fyne.TextAlignCenter
 	u.titleLabel.TextStyle.Bold = true
 	u.titleLabel.TextSize = 20
