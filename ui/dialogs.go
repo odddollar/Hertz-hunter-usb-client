@@ -25,7 +25,28 @@ func (u *Ui) showAbout() {
 
 	// Use Fyne-X's about dialog
 	d := widgets.NewAbout(content, links, u.batteryVoltage, u.a, u.w)
-	d.Resize(fyne.NewSize(0, 424)) // 0 width as will always be at least content's min-width
+	d.Resize(fyne.NewSize(0, 425)) // 0 width as will always be at least content's min-width
+	d.Show()
+}
+
+// Show help dialog for communication retries
+func (u *Ui) showMaxComRetriesHelp() {
+	d := dialog.NewInformation(
+		"Max Communication Retries Help",
+		"How many times a serial message should attempt to be sent before returning an error",
+		u.w,
+	)
+	d.Resize(fyne.NewSize(400, 0))
+	d.Show()
+}
+
+// Show help dialog for graph refresh interval
+func (u *Ui) showGraphRefreshIntervalHelp() {
+	d := dialog.NewInformation(
+		"Graph Refresh Interval Help",
+		"The delay between polls for updated RSSI data",
+		u.w,
+	)
 	d.Show()
 }
 

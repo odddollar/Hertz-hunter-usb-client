@@ -115,12 +115,12 @@ func (u *Ui) NewUI() {
 	// Create communication retries dropdown
 	u.maxComRetriesSelect = widget.NewSelect(intsToStrings(COMMUNICATION_RETRIES), func(s string) {})
 	u.maxComRetriesSelect.SetSelected(fmt.Sprint(DEFAULT_COMMUNICATION_RETRIES))
-	u.maxComRetriesHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), func() {})
+	u.maxComRetriesHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showMaxComRetriesHelp)
 
 	// Create refresh graph dropdown
 	u.graphRefreshIntervalSelect = widget.NewSelect(durationsToStrings(REFRESH_INTERVALS), func(s string) {})
 	u.graphRefreshIntervalSelect.SetSelected(fmt.Sprintf("%.2gs", DEFAULT_REFRESH_INTERVAL.Seconds()))
-	u.graphRefreshIntervalHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), func() {})
+	u.graphRefreshIntervalHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), u.showGraphRefreshIntervalHelp)
 
 	// Create connect button
 	u.connectButton = widget.NewButton("Connect", func() { go u.connectUSBSerial() })
@@ -249,7 +249,7 @@ func (u *Ui) NewUI() {
 
 // Show and run app
 func (u *Ui) Run() {
-	u.w.Resize(fyne.NewSize(800, 600))
+	u.w.Resize(fyne.NewSize(800, 0))
 	u.w.Show()
 	u.a.Run()
 }

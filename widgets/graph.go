@@ -253,7 +253,7 @@ type rssiGraphRenderer struct {
 
 // Returns minimum size of RssiGraph
 func (r *rssiGraphRenderer) MinSize() fyne.Size {
-	return fyne.NewSize(160, 120)
+	return fyne.NewSize(500, 200)
 }
 
 // Lays out image to fill RssiGraph
