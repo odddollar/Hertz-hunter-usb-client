@@ -34,7 +34,10 @@ type Ui struct {
 	portsSelect                *widget.Select
 	portsRefreshButton         *widget.Button
 	baudRateSelect             *widget.Select
+	maxComRetriesSelect        *widget.Select
+	maxComRetriesHelp          *widget.Button
 	graphRefreshIntervalSelect *widget.Select
+	graphRefreshIntervalHelp   *widget.Button
 	connectButton              *widget.Button
 	disconnectButton           *widget.Button
 
@@ -105,13 +108,19 @@ func (u *Ui) NewUI() {
 	// Create refresh ports button
 	u.portsRefreshButton = widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), u.refreshPortsDisplay)
 
-	// Create baudrate entry
+	// Create baudrate dropdown
 	u.baudRateSelect = widget.NewSelect(intsToStrings(BAUD_RATES), func(s string) {})
 	u.baudRateSelect.SetSelected(fmt.Sprint(DEFAULT_BAUD_RATE))
+
+	// Create communication retries dropdown
+	u.maxComRetriesSelect = widget.NewSelect(intsToStrings(COMMUNICATION_RETRIES), func(s string) {})
+	u.maxComRetriesSelect.SetSelected(fmt.Sprint(DEFAULT_COMMUNICATION_RETRIES))
+	u.maxComRetriesHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), func() {})
 
 	// Create refresh graph dropdown
 	u.graphRefreshIntervalSelect = widget.NewSelect(durationsToStrings(REFRESH_INTERVALS), func(s string) {})
 	u.graphRefreshIntervalSelect.SetSelected(fmt.Sprintf("%.2gs", DEFAULT_REFRESH_INTERVAL.Seconds()))
+	u.graphRefreshIntervalHelp = widget.NewButtonWithIcon("", theme.InfoIcon(), func() {})
 
 	// Create connect button
 	u.connectButton = widget.NewButton("Connect", func() { go u.connectUSBSerial() })
@@ -125,14 +134,21 @@ func (u *Ui) NewUI() {
 	connectionContainer := container.NewVBox(
 		widget.NewForm(
 			widget.NewFormItem("Serial Port", container.NewBorder(
-				nil,
-				nil,
-				nil,
+				nil, nil, nil,
 				u.portsRefreshButton,
 				u.portsSelect,
 			)),
 			widget.NewFormItem("Baud Rate", u.baudRateSelect),
-			widget.NewFormItem("Graph Refresh Interval", u.graphRefreshIntervalSelect),
+			widget.NewFormItem("Max Communication Retries", container.NewBorder(
+				nil, nil, nil,
+				u.maxComRetriesHelp,
+				u.maxComRetriesSelect,
+			)),
+			widget.NewFormItem("Graph Refresh Interval", container.NewBorder(
+				nil, nil, nil,
+				u.graphRefreshIntervalHelp,
+				u.graphRefreshIntervalSelect,
+			)),
 		),
 		u.connectButton,
 		u.disconnectButton,
@@ -244,6 +260,7 @@ func (u *Ui) disableConnectionUi() {
 		u.portsSelect.Disable()
 		u.portsRefreshButton.Disable()
 		u.baudRateSelect.Disable()
+		u.maxComRetriesSelect.Disable()
 		u.graphRefreshIntervalSelect.Disable()
 		u.connectButton.Disable()
 	})
@@ -255,6 +272,7 @@ func (u *Ui) enableConnectionUi() {
 		u.portsSelect.Enable()
 		u.portsRefreshButton.Enable()
 		u.baudRateSelect.Enable()
+		u.maxComRetriesSelect.Enable()
 		u.graphRefreshIntervalSelect.Enable()
 		u.connectButton.Enable()
 	})

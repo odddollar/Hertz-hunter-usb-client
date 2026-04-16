@@ -10,6 +10,10 @@ var (
 	BAUD_RATES        = []int{9600, 19200, 38400, 57600, 115200}
 	DEFAULT_BAUD_RATE = 115200
 
+	// Communication retries used in ui dropdown
+	COMMUNICATION_RETRIES         = []int{1, 2, 3, 4, 5}
+	DEFAULT_COMMUNICATION_RETRIES = 3
+
 	// Graph refresh intervals used in ui dropdown
 	REFRESH_INTERVALS        = []time.Duration{100 * time.Millisecond, 250 * time.Millisecond, 500 * time.Millisecond, 1 * time.Second}
 	DEFAULT_REFRESH_INTERVAL = 250 * time.Millisecond
