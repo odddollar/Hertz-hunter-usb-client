@@ -10,13 +10,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"log"
+	"os"
 	"sync"
 	"time"
 
 	"go.bug.st/serial"
 )
 
+// Keep track of how long most recent receive() call took
 var recentWait time.Duration
 
 // Format of serial frame
@@ -28,9 +30,15 @@ type SerialFrame struct {
 
 // Handles messaging and connection lifetime
 type Connection struct {
+	// Handle connection
 	port       serial.Port
 	maxRetries int
 
+	// Handle connection logging
+	logFile *os.File
+	logger  *log.Logger
+
+	// Handle preventing simultaneous messages
 	mu sync.Mutex
 }
 
@@ -56,10 +64,20 @@ func NewConnection(portName string, baud, maxRetries int) (*Connection, error) {
 	port.SetDTR(false)
 	port.SetRTS(false)
 
+	// Create log file and logger
+	logFile, err := os.OpenFile("usb_connection.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		port.Close()
+		return nil, err
+	}
+	logger := log.New(logFile, "", log.Ldate|log.Ltime|log.Lshortfile)
+
 	// Create connection object with port
 	connection := Connection{
 		port:       port,
 		maxRetries: maxRetries,
+		logFile:    logFile,
+		logger:     logger,
 	}
 
 	// Check if connection succeeded
@@ -80,6 +98,9 @@ func (c *Connection) Disconnect() {
 	c.port.ResetInputBuffer()
 	c.port.ResetOutputBuffer()
 	c.port.Close()
+
+	// Close log file
+	c.logFile.Close()
 }
 
 // Send message frame over serial and return response
@@ -98,7 +119,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		// Send message
 		if err := c.send(msg); err != nil {
 			lastErr = err
-			fmt.Printf("Retrying send: %d\n", i)
+			c.logger.Printf("Retrying send (%d): %v", i, err)
 			time.Sleep(50 * time.Millisecond)
 			continue
 		}
@@ -107,7 +128,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		rec, err := c.receive()
 		if err != nil {
 			lastErr = err
-			fmt.Printf("Retrying receive: %s, %s\n", err, recentWait)
+			c.logger.Printf("Retrying send/receive (%d, %s): %v", i, recentWait, err)
 			time.Sleep(50 * time.Millisecond)
 			continue
 		}
@@ -115,6 +136,7 @@ func (c *Connection) Communicate(msg SerialFrame) (SerialFrame, error) {
 		return rec, nil
 	}
 
+	c.logger.Printf("Communication failed after %d retries: %v", c.maxRetries, lastErr)
 	return SerialFrame{}, lastErr
 }
 
@@ -123,6 +145,7 @@ func (c *Connection) send(msg SerialFrame) error {
 	// Marshall struct
 	data, err := json.Marshal(msg)
 	if err != nil {
+		c.logger.Printf("JSON marshalling error: %v", err)
 		return err
 	}
 
@@ -132,6 +155,7 @@ func (c *Connection) send(msg SerialFrame) error {
 	// Write data to port
 	_, err = c.port.Write(data)
 	if err != nil {
+		c.logger.Printf("Port write error: %v", err)
 		return err
 	}
 
@@ -144,6 +168,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 	// Port timeout used for single read() calls
 	deadline := time.Now().Add(500 * time.Millisecond)
 
+	// Keep track of how long this receive() call took
 	startTime := time.Now()
 	defer func() {
 		recentWait = time.Since(startTime)
@@ -160,6 +185,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 		// Read bytes to tmp buffer
 		nBytes, err := c.port.Read(tmp)
 		if err != nil {
+			c.logger.Printf("Port read error: %v", err)
 			return SerialFrame{}, err
 		}
 		if nBytes == 0 {
@@ -183,14 +209,16 @@ func (c *Connection) receive() (SerialFrame, error) {
 			if b == '\n' {
 				var msg SerialFrame
 				if err := json.Unmarshal(buffer.Bytes(), &msg); err != nil {
-					fmt.Println(buffer.String())
+					c.logger.Printf("JSON unmarshalling error: %v | raw: %s", err, buffer.String())
 					return SerialFrame{}, err
 				}
 				if msg.Event == "error" {
 					// Safe type assertion
 					if status, ok := msg.Payload["status"].(string); ok {
+						c.logger.Printf("Device error: %s", status)
 						return SerialFrame{}, errors.New(status)
 					}
+					c.logger.Println("Unknown device error")
 					return SerialFrame{}, errors.New("unknown device error")
 				}
 
@@ -202,6 +230,7 @@ func (c *Connection) receive() (SerialFrame, error) {
 		}
 	}
 
+	c.logger.Println("Serial receive timeout")
 	return SerialFrame{}, errors.New("serial receive timeout")
 }
 
