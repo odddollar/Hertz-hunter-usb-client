@@ -8,6 +8,8 @@ For further information on the capabilities of the Hertz Hunter project, please 
 
 - Connecting to a Hertz Hunter device via a configurable serial port and baud rate
 - Robust communication protocol to minimise disconnection errors
+  - Selectable number of retries for sending/receiving serial data before returning an error
+  - Logging of any serial errors that do occur 
 - Interactive graphing of RSSI data
   - Mouse over the graph to show a tooltip with the hovered frequency and its live signal strength
 - Configurable interval to poll data from the device to update the graph
@@ -27,7 +29,7 @@ For further information on the capabilities of the Hertz Hunter project, please 
 3. Launch the USB client application
 4. Refresh the serial port list (if necessary) and select the correct one
 5. Select the same baud rate as displayed on Hertz Hunter's screen
-6. Select the `Graph Refresh Interval`. The default works well, but can be adjusted if desired
+6. Select `Max Communication Retries` and `Graph Refresh Interval`. The defaults work well, but can be adjusted if desired
 7. Click `Connect`
 
 ## Building
