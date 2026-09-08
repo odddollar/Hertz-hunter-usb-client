@@ -53,4 +53,8 @@ func (u *Ui) switchBand() {
 		u.showError(err)
 		return
 	}
+
+	// Reset and clear graphs
+	u.spectrumGraph.Reset()
+	u.waterfallGraph.Reset()
 }
